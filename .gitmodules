@@ -1,0 +1,12 @@
+[submodule "ECS"]
+	path = ECS
+	url = git@github.com:GradeDe-rtype/ECS.git
+[submodule "CoreGame"]
+	path = CoreGame
+	url = git@github.com:GradeDe-rtype/CoreGame.git
+[submodule "Server"]
+	path = Server
+	url = git@github.com:GradeDe-rtype/Network.git
+[submodule "Client"]
+	path = Client
+	url = git@github.com:GradeDe-rtype/CoreGame.git

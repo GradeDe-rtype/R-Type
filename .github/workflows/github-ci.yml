@@ -12,30 +12,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Conan cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.conan2
-          key: ${{ runner.os }}-conan-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-conan-
-
       - name: Install Python and pip
         run: sudo apt-get update && sudo apt-get install -y python3 python3-pip
 
       - name: Install Conan
         run: pip3 install conan
 
-      - name: Setup Conan profile
-        run: conan profile detect
-
-      - name: Install Conan dependencies
+      # ECS Build
+      - name: Install Conan dependencies for ECS
+        working-directory: ECS
         run: conan install . --build=missing
 
-      - name: Build Docker image
+      - name: Build ECS Docker image
+        working-directory: ECS
         run: docker build -f Dockerfile.ecs -t ecs_image .
 
-      - name: Build project inside Docker
+      - name: Build ECS Project
+        working-directory: ECS
         run: |
           docker run ecs_image cmake .
           docker run ecs_image make
@@ -44,8 +37,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Run tests inside Docker
+      # Test ECS
+      - name: Run ECS tests
+        working-directory: ECS
         run: docker run ecs_image ./run_tests.sh
+
+      # Test Server
+      - name: Build and test Server
+        working-directory: Server
+        run: |
+          conan install . --build=missing
+          docker build -f Dockerfile.server -t server_image .
+          docker run server_image ./run_tests.sh
+
+      # Test Client
+      - name: Build and test Client
+        working-directory: Client
+        run: |
+          conan install . --build=missing
+          docker build -f Dockerfile.client -t client_image .
+          docker run client_image ./run_tests.sh
 
   deploy:
     runs-on: ubuntu-latest

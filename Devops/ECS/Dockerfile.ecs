@@ -15,8 +15,6 @@ RUN pip3 install conan
 RUN conan profile detect
 
 WORKDIR /ECS
-COPY conanfile.txt /ECS/
-COPY CMakeLists.txt /ECS/
 COPY . /ECS
 RUN conan install . --build=missing -c tools.system.package_manager:mode=install
 RUN cmake . -DCMAKE_BUILD_TYPE=Release && make

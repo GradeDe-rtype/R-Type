@@ -1,0 +1,82 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Conan cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-conan-
+
+      - name: Install Conan dependencies
+        run: conan install . --build=missing
+
+      - name: Build Docker image
+        run: docker build -f Dockerfile.ecs -t ecs_image .
+
+      - name: Build project inside Docker
+        run: |
+          docker run ecs_image cmake .
+          docker run ecs_image make
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Run tests inside Docker
+        run: docker run ecs_image ./run_tests.sh
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Deploy to Epitech repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "your_email@example.com"
+          git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
+          git push epitech main
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "content": null,
+            "embeds": [{
+              "title": "CI/CD Pipeline Passed",
+              "description": "The CI/CD pipeline for **R-Type** has successfully passed, and the project has been deployed to the Epitech repo.",
+              "color": 3066993,
+              "fields": [
+                {"name": "Stage", "value": "Deploy"},
+                {"name": "Status", "value": "Success"}
+              ],
+              "footer": {"text": "CI/CD Notifications"},
+              "timestamp": "'$(date --utc +%Y-%m-%dT%H:%M:%SZ)'"
+            }]
+          }' $DISCORD_WEBHOOK_URL

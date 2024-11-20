@@ -22,13 +22,19 @@ jobs:
         run: conan profile detect
 
       # ECS Build
-      - name: Install Conan dependencies for ECS
+      - name: Install Conan dependencies
         working-directory: Devops/ECS
         run: conan install . --build=missing -c tools.system.package_manager:mode=install
 
-      - name: Build ECS Docker image
+      - name: Build Docker image
         working-directory: Devops/ECS
         run: docker build -f Dockerfile.ecs -t ecs_image .
+
+      - name: Build project inside Docker
+        working-directory: Devops/ECS
+        run: |
+          docker run ecs_image cmake .
+          docker run ecs_image make
 
       - name: Build ECS Project
         working-directory: Devops/ECS

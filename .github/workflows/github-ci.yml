@@ -20,15 +20,15 @@ jobs:
 
       # ECS Build
       - name: Install Conan dependencies for ECS
-        working-directory: ECS
+        working-directory: Devops/ECS
         run: conan install . --build=missing
 
       - name: Build ECS Docker image
-        working-directory: ECS
+        working-directory: Devops/ECS
         run: docker build -f Dockerfile.ecs -t ecs_image .
 
       - name: Build ECS Project
-        working-directory: ECS
+        working-directory: Devops/ECS
         run: |
           docker run ecs_image cmake .
           docker run ecs_image make
@@ -39,12 +39,12 @@ jobs:
     steps:
       # Test ECS
       - name: Run ECS tests
-        working-directory: ECS
+        working-directory: Devops/ECS
         run: docker run ecs_image ./run_tests.sh
 
       # Test Server
       - name: Build and test Server
-        working-directory: Server
+        working-directory: Devops/Server
         run: |
           conan install . --build=missing
           docker build -f Dockerfile.server -t server_image .
@@ -52,7 +52,7 @@ jobs:
 
       # Test Client
       - name: Build and test Client
-        working-directory: Client
+        working-directory: Devops/Client
         run: |
           conan install . --build=missing
           docker build -f Dockerfile.client -t client_image .

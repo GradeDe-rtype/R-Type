@@ -24,7 +24,7 @@ jobs:
       # ECS Build
       - name: Install Conan dependencies for ECS
         working-directory: Devops/ECS
-        run: conan install . --build=missing
+        run: conan install . --build=missing -c tools.system.package_manager:mode=install
 
       - name: Build ECS Docker image
         working-directory: Devops/ECS

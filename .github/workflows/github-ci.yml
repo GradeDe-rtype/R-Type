@@ -14,7 +14,7 @@ jobs:
 
       - name: Build Docker image
         working-directory: Devops/ECS
-        run: docker build -f Dockerfile -t ecs_image .
+        run: docker build -f Dockerfile.ecs -t ecs_image .
 
       - name: Build project inside Docker
         working-directory: Devops/ECS

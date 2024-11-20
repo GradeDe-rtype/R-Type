@@ -10,12 +10,15 @@ RUN apt-get update && apt-get install -y \
     systemd \
     libsystemd-dev
 
-
 RUN pip3 install conan
+
 RUN conan profile detect
 
 WORKDIR /ECS
+
 COPY . /ECS
+
 RUN conan install . --build=missing -c tools.system.package_manager:mode=install
-RUN cmake . -DCMAKE_BUILD_TYPE=Release && make
-CMD ["./R-Type"]
+RUN cmake . && make
+
+CMD ["./main"]

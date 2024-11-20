@@ -13,14 +13,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Docker image
-        working-directory: Devops/Client
-        run: docker build -f Dockerfile -t client_image .
+        working-directory: Devops/ECS
+        run: docker build -f Dockerfile -t ecs_image .
 
       - name: Build project inside Docker
-        working-directory: Devops/Client
+        working-directory: Devops/ECS
         run: |
-          docker run client_image cmake .
-          docker run client_image make
+          docker run ecs_image cmake .
+          docker run ecs_image make
 
   test:
     runs-on: ubuntu-latest

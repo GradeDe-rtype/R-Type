@@ -1,0 +1,23 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    python3-pip \
+    git \
+    curl \
+    pkg-config \
+    systemd \
+    libsystemd-dev
+
+
+RUN pip3 install conan
+RUN conan profile detect
+
+WORKDIR /ECS
+COPY conanfile.txt /ECS/
+COPY CMakeLists.txt /ECS/
+COPY . /ECS
+RUN conan install . --build=missing -c tools.system.package_manager:mode=install
+RUN cmake . -DCMAKE_BUILD_TYPE=Release && make
+CMD ["./R-Type"]

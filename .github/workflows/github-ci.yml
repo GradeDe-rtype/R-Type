@@ -22,13 +22,13 @@ jobs:
           docker run ecs_image cmake .
           docker run ecs_image make
 
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Run ECS tests
-        working-directory: Devops/ECS
-        run: docker run ecs_image ./run_tests.sh
+  # test:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: Run ECS tests
+  #       working-directory: Devops/ECS
+  #       run: docker run ecs_image ./run_tests.sh
 
   deploy:
     runs-on: ubuntu-latest

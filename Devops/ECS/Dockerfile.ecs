@@ -21,4 +21,4 @@ COPY . /ECS
 RUN conan install . --build=missing -c tools.system.package_manager:mode=install
 RUN cmake . && make
 
-CMD ["./main"]
+CMD ["bash", "./run_tests.sh"]

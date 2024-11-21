@@ -26,9 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Run Client tests
-        working-directory: Devops/Client
-        run: docker run client_image ./run_tests.sh
+      - name: Run ECS tests
+        working-directory: Devops/ECS
+        run: docker run ecs_image ./run_tests.sh
 
   deploy:
     runs-on: ubuntu-latest

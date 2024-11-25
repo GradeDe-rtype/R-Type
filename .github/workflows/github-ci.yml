@@ -22,18 +22,13 @@ jobs:
           docker run ecs_image cmake .
           docker run ecs_image make
 
-  # test:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: Run ECS tests
-  #       working-directory: Devops/ECS
-  #       run: docker run ecs_image ./run_tests.sh
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
@@ -68,4 +63,7 @@ jobs:
                 {"name": "Stage", "value": "Deploy"},
                 {"name": "Status", "value": "Success"}
               ],
-              "footer": {"text": "CI/CD Notificatio
+              "footer": {"text": "CI/CD Notifications"},
+              "timestamp": "'$(date --utc +%Y-%m-%dT%H:%M:%SZ)'"
+            }]
+          }' $DISCORD_WEBHOOK_URL

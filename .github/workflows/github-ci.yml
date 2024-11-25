@@ -26,19 +26,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Deploy to Epitech repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      - name: Pull latest changes from Epitech repo
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "your_email@example.com"
-          git remote add epitech https://x-access-token:${GITHUB_TOKEN}@github.com/EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
+          git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
+          git pull epitech main --rebase || true
+
+      - name: Deploy to Epitech repo
+        run: |
           git push epitech main
-
-
 
   notify:
     runs-on: ubuntu-latest

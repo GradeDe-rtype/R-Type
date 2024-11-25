@@ -26,6 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Verify repository setup
+        run: |
+          pwd
+          ls -a
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
@@ -43,8 +50,10 @@ jobs:
           git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
           git pull epitech main --rebase || echo "Pull failed, continuing with push."
 
-      - name: Deploy to Epitech repo
+      - name: Push to Epitech repo
         run: |
+          git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
+          git pull epitech main --rebase || true
           git push --mirror epitech
 
   notify:

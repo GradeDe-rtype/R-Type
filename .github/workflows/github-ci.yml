@@ -34,7 +34,12 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: ssh -T git@github.com
 
       - name: Deploy to Epitech repo
         env:
@@ -44,6 +49,7 @@ jobs:
           git config --global user.email "your_email@example.com"
           git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
           git push epitech main
+
 
   notify:
     runs-on: ubuntu-latest

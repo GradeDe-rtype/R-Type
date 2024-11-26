@@ -7,6 +7,15 @@ services:
       dockerfile: Dockerfile.ecs
     volumes:
       - ./ecs:/ecs
+    platform: linux/amd64
+
+  ecs-windows:
+    build:
+      context: .
+      dockerfile: Dockerfile.ecsw
+    volumes:
+      - ./ecs:/ecs
+    platform: windows/amd64
 
   server:
     build:
@@ -14,6 +23,15 @@ services:
       dockerfile: Dockerfile.server
     volumes:
       - ./server:/server
+    platform: linux/amd64
+
+  server-windows:
+    build:
+      context: .
+      dockerfile: Dockerfile.serverw
+    volumes:
+      - ./server:/server
+    platform: windows/amd64
 
   client:
     build:
@@ -21,3 +39,38 @@ services:
       dockerfile: Dockerfile.client
     volumes:
       - ./client:/client
+    platform: linux/amd64
+
+  client-windows:
+    build:
+      context: .
+      dockerfile: Dockerfile.clientw
+    volumes:
+      - ./client:/client
+    platform: windows/amd64
+
+  app-linux:
+    depends_on:
+      - ecs
+      - server
+      - client
+    services:
+      ecs:
+        platform: linux/amd64
+      server:
+        platform: linux/amd64
+      client:
+        platform: linux/amd64
+
+  app-windows:
+    depends_on:
+      - ecs-windows
+      - server-windows
+      - client-windows
+    services:
+      ecs-windows:
+        platform: windows/amd64
+      server-windows:
+        platform: windows/amd64
+      client-windows:
+        platform: windows/amd64

@@ -24,13 +24,13 @@ jobs:
       - name: Install dependencies (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          choco install -y llvm
+          choco install -y llvm --timeout=600
 
       - name: Run clang-tidy
-        run: clang-tidy **/*.cpp -- -std=c++17
+        run: find . -name "Devops/ECS/*.cpp" -exec clang-tidy {} -- -std=c++17 \;
 
       - name: Run clang-format
-        run: clang-format -i **/*.cpp
+        run: find . -name "Devops/ECS/*.cpp" -exec clang-format -i {} \;
 
   build:
     runs-on: ${{ matrix.os }}

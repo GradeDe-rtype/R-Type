@@ -1,19 +1,37 @@
-# Windows Dockerfile
+# Base image for Windows
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 RUN powershell -Command \
-    choco install -y cmake git python3 curl && \
-    choco install -y clang-tidy clang-format
+    Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
 
-WORKDIR C:/ECS
+RUN choco install -y cmake git python3 curl && \
+    choco install -y llvm clang-tidy clang-format python3
 
-COPY . C:/ECS
+RUN pip install conan
 
-RUN pip3 install --no-cache-dir conan
+RUN powershell -Command conan profile detect
 
-RUN conan profile detect
+WORKDIR C:\ECS
 
-RUN conan install . --build=missing -c tools.system.package_manager:mode=install
-RUN cmake . && cmake --build . --config Release
+COPY . C:\ECS
 
-CMD ["cmd", "/c", "run_tests.bat"]
+RUN powershell -Command \
+    conan install . --build=missing
+
+RUN powershell -Command \
+    cmake .; \
+    cmake --build .
+
+RUN powershell -Command \
+    Get-ChildItem -Path .\ -Recurse -Filter *.cpp | ForEach-Object { \
+        clang-tidy $_.FullName -- -std=c++17 \
+    }
+
+RUN powershell -Command \
+    Get-ChildItem -Path .\ -Recurse -Filter *.cpp | ForEach-Object { \
+        clang-format -i $_.FullName \
+    }
+
+CMD ["main.exe"]

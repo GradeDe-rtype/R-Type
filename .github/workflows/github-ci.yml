@@ -57,6 +57,10 @@ jobs:
           docker run ecs_image cmake .
           docker run ecs_image make
 
+      - name: Capture Test Results
+        working-directory: Devops/ECS
+        run: docker run ecs_image bash -c "./run_tests.sh > test_results.json || true"
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -87,48 +91,53 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint-format, build, deploy]
     steps:
+      - name: Read Test Results
+        id: read-results
+        run: |
+          if [[ -f Devops/ECS/test_results.json ]]; then
+            RESULTS=$(cat Devops/ECS/test_results.json)
+          else
+            RESULTS="[]"
+          fi
+          echo "::set-output name=results::$RESULTS"
+
       - name: Notify via Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          if [[ $GITHUB_JOB == "success" ]]; then
-            curl -H "Content-Type: application/json" -X POST -d '{
-              "content": null,
-              "embeds": [{
-                "title": "✅ Action Successful",
-                "description": "**EPITECH-RType/Deployment**",
-                "color": 3066993,
-                "fields": [
-                  {"name": "Test 001-ping-test", "value": "Success", "inline": true},
-                  {"name": "Test 002-register-test", "value": "Success", "inline": true},
-                  {"name": "Test 003-login-test", "value": "Success", "inline": true},
-                  {"name": "Test 004-about-json", "value": "Success", "inline": true},
-                  {"name": "Test 005-action-reaction", "value": "Success", "inline": true},
-                  {"name": "Test 006-oauth-tests", "value": "Success", "inline": true},
-                  {"name": "Test xxx-remove-garbage", "value": "Success", "inline": true}
-                ],
-                "footer": {"text": "CI/CD Notifications"},
-                "timestamp": "'$(date --utc +%Y-%m-%dT%H:%M:%SZ)'"
-              }]
-            }' $DISCORD_WEBHOOK_URL
+          TEST_RESULTS="${{ steps.read-results.outputs.results }}"
+
+          FIELDS=""
+          STATUS="Success"
+
+          while IFS= read -r line; do
+            TEST_NAME=$(echo "$line" | jq -r '.name')
+            TEST_STATUS=$(echo "$line" | jq -r '.status')
+            TEST_DETAILS=$(echo "$line" | jq -r '.details')
+
+            if [[ "$TEST_STATUS" == "Failure" ]]; then
+              STATUS="Failure"
+            fi
+
+            FIELDS="${FIELDS},{\"name\": \"${TEST_NAME}\", \"value\": \"${TEST_STATUS} - ${TEST_DETAILS}\", \"inline\": true}"
+          done < <(echo "$TEST_RESULTS" | jq -c '.[]')
+
+          if [[ "$STATUS" == "Success" ]]; then
+            COLOR=3066993
+            TITLE="✅ All Tests Passed"
           else
-            curl -H "Content-Type: application/json" -X POST -d '{
-              "content": null,
-              "embeds": [{
-                "title": "❌ Action Failed",
-                "description": "**EPITECH-RType/Deployment**",
-                "color": 15158332,
-                "fields": [
-                  {"name": "Test 001-ping-test", "value": "Success", "inline": true},
-                  {"name": "Test 002-register-test", "value": "Success", "inline": true},
-                  {"name": "Test 003-login-test", "value": "Success", "inline": true},
-                  {"name": "Test 004-about-json", "value": "Success", "inline": true},
-                  {"name": "Test 005-action-reaction", "value": "Success", "inline": true},
-                  {"name": "Test 006-oauth-tests", "value": "Failure", "inline": true},
-                  {"name": "Test xxx-remove-garbage", "value": "Failure", "inline": true}
-                ],
-                "footer": {"text": "CI/CD Notifications"},
-                "timestamp": "'$(date --utc +%Y-%m-%dT%H:%M:%SZ)'"
-              }]
-            }' $DISCORD_WEBHOOK_URL
+            COLOR=15158332
+            TITLE="❌ Some Tests Failed"
           fi
+
+          curl -H "Content-Type: application/json" -X POST -d "{
+            \"content\": null,
+            \"embeds\": [{
+              \"title\": \"$TITLE\",
+              \"description\": \"**EPITECH-RType/Tests**\",
+              \"color\": $COLOR,
+              \"fields\": [${FIELDS#,*}],
+              \"footer\": {\"text\": \"CI/CD Notifications\"},
+              \"timestamp\": \"$(date --utc +%Y-%m-%dT%H:%M:%SZ)\"
+            }]
+          }" $DISCORD_WEBHOOK_URL

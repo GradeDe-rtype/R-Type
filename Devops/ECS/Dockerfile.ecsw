@@ -1,0 +1,19 @@
+# Windows Dockerfile
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+RUN powershell -Command \
+    choco install -y cmake git python3 curl && \
+    choco install -y clang-tidy clang-format
+
+WORKDIR C:/ECS
+
+COPY . C:/ECS
+
+RUN pip3 install --no-cache-dir conan
+
+RUN conan profile detect
+
+RUN conan install . --build=missing -c tools.system.package_manager:mode=install
+RUN cmake . && cmake --build . --config Release
+
+CMD ["cmd", "/c", "run_tests.bat"]

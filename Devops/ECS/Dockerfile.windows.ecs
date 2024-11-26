@@ -11,10 +11,15 @@ RUN choco install -y cmake git python3 curl && \
 
 RUN pip install conan
 
-RUN powershell -Command conan profile detect
+RUN powershell -Command \
+    conan install . --build=missing; \
+    conan profile detect; \
+    cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .; \
+    cmake --build .
 
 WORKDIR C:\ECS
 
+COPY compile_commands.json .
 COPY . C:\ECS
 
 RUN powershell -Command \
@@ -28,5 +33,6 @@ RUN powershell -Command \
     Get-ChildItem -Path .\ -Recurse -Filter *.cpp | ForEach-Object { \
         clang-tidy $_.FullName -- -std=c++17 -I.\conan\include \
     }
+    
 
 CMD ["main.exe"]

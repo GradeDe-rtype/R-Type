@@ -26,11 +26,24 @@ jobs:
         run: |
           choco install -y llvm --timeout=600
 
-      - name: Run clang-tidy
-        run: find . -name "Devops/ECS/*.cpp" -exec clang-tidy {} -- -std=c++17 \;
+      - name: Run clang-tidy (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: find Devops/ECS -name "*.cpp" -exec clang-tidy {} -- -std=c++17 \;
 
-      - name: Run clang-format
-        run: find . -name "Devops/ECS/*.cpp" -exec clang-format -i {} \;
+      - name: Run clang-tidy (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-tidy $_.FullName -- -std=c++17 }
+
+      - name: Run clang-format (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: find Devops/ECS -name "*.cpp" -exec clang-format -i {} \;
+
+      - name: Run clang-format (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-format -i $_.FullName }
+  
 
   build:
     runs-on: ${{ matrix.os }}

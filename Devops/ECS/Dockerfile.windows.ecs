@@ -2,12 +2,12 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 RUN powershell -Command \
-    Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    "Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
-    Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
+    Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression"
 
 RUN choco install -y cmake git python3 curl && \
-    choco install -y llvm clang-tidy clang-format python3
+    choco install -y llvm clang-tidy clang-format
 
 RUN pip install conan
 
@@ -26,12 +26,7 @@ RUN powershell -Command \
 
 RUN powershell -Command \
     Get-ChildItem -Path .\ -Recurse -Filter *.cpp | ForEach-Object { \
-        clang-tidy $_.FullName -- -std=c++17 \
-    }
-
-RUN powershell -Command \
-    Get-ChildItem -Path .\ -Recurse -Filter *.cpp | ForEach-Object { \
-        clang-format -i $_.FullName \
+        clang-tidy $_.FullName -- -std=c++17 -I.\conan\include \
     }
 
 CMD ["main.exe"]

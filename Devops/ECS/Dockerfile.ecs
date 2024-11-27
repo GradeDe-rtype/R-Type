@@ -15,8 +15,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     autoconf \
     automake \
     libtool \
-    pkg-config && \
-    apt-get clean
+    pkg-config
 
 RUN pip3 install conan
 

@@ -8,7 +8,15 @@ RUN apt-get update && apt-get install -y \
     curl \
     pkg-config \
     systemd \
-    libsystemd-dev
+    systemd-devel \
+    libglvnd-dev \
+    mesa-libGL-devel \
+    perl \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    && apt-get clean
 
 RUN pip3 install conan
 
@@ -18,7 +26,10 @@ WORKDIR /ECS
 
 COPY . /ECS
 
-RUN conan install . --build=missing -c tools.system.package_manager:mode=install
-RUN cmake . && make
+WORKDIR /ECS/build
+
+RUN conan install .. --build=missing -c tools.system.package_manager:mode=install
+RUN cmake .. -DCMAKE_BUILD_TYPE=Release
+RUN cmake --build .
 
 CMD ["bash", "./run_tests.sh"]

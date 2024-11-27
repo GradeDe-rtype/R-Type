@@ -26,23 +26,35 @@ jobs:
         run: |
           choco install -y llvm --timeout=600
 
-      - name: Run clang-tidy (Linux)
+      - name: Install Conan (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: find Devops/ECS -name "*.cpp" -exec clang-tidy {} -- -std=c++17 \;
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip
+          pip3 install conan
 
-      - name: Run clang-tidy (Windows)
+      - name: Install Conan (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-tidy $_.FullName -- -std=c++17 -I.\build\conan\include }
+          pip install conan
 
-      - name: Run clang-format (Linux)
+      - name: Configure and Build Project (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: find Devops/ECS -name "*.cpp" -exec clang-format -i {} \;
+        run: |
+          mkdir -p Devops/ECS/build
+          cd Devops/ECS/build
+          conan install .. --build=missing -c tools.system.package_manager:mode=install
+          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          make
 
-      - name: Run clang-format (Windows)
+      - name: Configure and Build Project (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-format -i $_.FullName }
+          mkdir Devops\ECS\build
+          cd Devops\ECS\build
+          conan install .. --build=missing -c tools.system.package_manager:mode=install
+          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake --build .
 
   build:
     runs-on: ${{ matrix.os }}

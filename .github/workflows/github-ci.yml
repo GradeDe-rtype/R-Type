@@ -57,18 +57,32 @@ jobs:
       - name: Build Docker image (Linux)
         if: matrix.os == 'ubuntu-latest'
         working-directory: Devops/ECS
-        run: docker build -f Dockerfile.ecs -t ecs_image .
+        run: |
+            docker build -f Dockerfile.ecs -t ecs_image .
+            docker run ecs_image bash -c "dpkg --list | grep 'build-essential'"
 
       - name: Build Docker image (Windows)
         if: matrix.os == 'windows-latest'
         working-directory: Devops/ECS
         run: docker build -f Dockerfile.windows.ecs -t ecs_image .
 
+      - name: Run clang-tidy (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-tidy $_.FullName -- -std=c++17 -I.\build\conan\include }
+
       - name: Build project inside Docker
         working-directory: Devops/ECS
         run: |
           docker run ecs_image cmake .
           docker run ecs_image make
+
+      - name: Debug build directory (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ls -la /ECS/build/
+          cat /ECS/build/CMakeCache.txt
+        
 
       - name: Capture Test Results
         working-directory: Devops/ECS

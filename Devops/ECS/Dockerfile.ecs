@@ -28,7 +28,8 @@ COPY . /ECS
 RUN mkdir -p build
 
 RUN conan profile detect
-RUN conan install . --output-folder=build/conan --build=missing
+RUN conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
+
 
 WORKDIR /ECS/build
 RUN cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON

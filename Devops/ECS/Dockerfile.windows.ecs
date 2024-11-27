@@ -14,10 +14,9 @@ WORKDIR C:\ECS
 
 COPY . C:\ECS
 
-WORKDIR C:\ECS\build
 RUN powershell -Command \
     conan install . --build=missing; \
-    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
+    cmake . -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
     cmake --build .
 
 RUN powershell -Command \

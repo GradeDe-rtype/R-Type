@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     systemd \
     libsystemd-dev \
+    libudev-dev \
     libglvnd-dev \
     libgl1-mesa-dev \
     perl \
@@ -20,15 +21,16 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip3 install conan
 
-RUN conan profile detect
-
 WORKDIR /ECS
 
 COPY . /ECS
 
-WORKDIR /ECS/build
+RUN mkdir -p build
 
-RUN conan install . --build=missing -c tools.system.package_manager:mode=install
+RUN conan profile detect
+RUN conan install . --output-folder=build/conan --build=missing
+
+WORKDIR /ECS/build
 RUN cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 RUN make
 

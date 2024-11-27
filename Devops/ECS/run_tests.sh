@@ -1,35 +1,43 @@
 #!/bin/bash
 
-# Variables
-SOURCE_FILE="main.cpp"
-OUTPUT_FILE="main.out"
+BUILD_DIR="/ECS/build"
+EXECUTABLE="./R-Type"
 
-# Compilation du fichier main.cpp
-echo "Compiling $SOURCE_FILE..."
-g++ -o $OUTPUT_FILE $SOURCE_FILE -I/usr/include -L/usr/lib -lGL -lGLU -lGLEW -lglm 2> compile_errors.log
-
-# Vérification de la compilation
-if [ $? -ne 0 ]; then
-    echo "❌ Compilation failed. Check compile_errors.log for details."
-    cat compile_errors.log
-    exit 1
-else
-    echo "✅ Compilation succeeded."
+if [ ! -d "$BUILD_DIR" ]; then
+    mkdir -p "$BUILD_DIR"
 fi
 
-# Exécution du programme
+cd "$BUILD_DIR"
+
+echo "Running CMake configuration..."
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+if [ $? -ne 0 ]; then
+    echo "❌ CMake configuration failed."
+    exit 1
+fi
+
+echo "Building the project..."
+make
+if [ $? -ne 0 ]; then
+    echo "❌ Build failed."
+    exit 1
+fi
+
+if [ ! -f "$EXECUTABLE" ]; then
+    echo "❌ Executable not found: $EXECUTABLE"
+    exit 1
+fi
+
 echo "Running the program..."
-./$OUTPUT_FILE > program_output.log
-
-# Vérification de l'exécution
+$EXECUTABLE > program_output.log
 if [ $? -ne 0 ]; then
-    echo "❌ Program execution failed. Check program_output.log for details."
+    echo "❌ Program execution failed."
     cat program_output.log
     exit 1
-else
-    echo "✅ Program executed successfully."
-    echo "Output:"
-    cat program_output.log
 fi
+
+echo "✅ Program executed successfully."
+echo "Output:"
+cat program_output.log
 
 exit 0

@@ -33,7 +33,7 @@ jobs:
       - name: Run clang-tidy (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-tidy $_.FullName -- -std=c++17 }
+          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-tidy $_.FullName -- -std=c++17 -I.\build\conan\include }
 
       - name: Run clang-format (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -43,7 +43,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-format -i $_.FullName }
-  
 
   build:
     runs-on: ${{ matrix.os }}
@@ -58,31 +57,37 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         working-directory: Devops/ECS
         run: |
-            docker build -f Dockerfile.ecs -t ecs_image .
-            docker run ecs_image bash -c "dpkg --list | grep 'build-essential'"
+          docker build -f Dockerfile.ecs -t ecs_image .
+          docker run ecs_image bash -c "dpkg --list | grep 'build-essential'"
 
       - name: Build Docker image (Windows)
         if: matrix.os == 'windows-latest'
         working-directory: Devops/ECS
         run: docker build -f Dockerfile.windows.ecs -t ecs_image .
 
-      - name: Run clang-tidy (Windows)
+      - name: Configure and Build Project (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir -p Devops/ECS/build
+          cd Devops/ECS/build
+          conan install .. --build=missing -c tools.system.package_manager:mode=install
+          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          make
+
+      - name: Configure and Build Project (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          Get-ChildItem -Path .\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { clang-tidy $_.FullName -- -std=c++17 -I.\build\conan\include }
-
-      - name: Build project inside Docker
-        working-directory: Devops/ECS
-        run: |
-          docker run ecs_image cmake .
-          docker run ecs_image make
+          mkdir Devops\ECS\build
+          cd Devops\ECS\build
+          conan install .. --build=missing -c tools.system.package_manager:mode=install
+          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake --build .
 
       - name: Debug build directory (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          ls -la /ECS/build/
-          cat /ECS/build/CMakeCache.txt
-        
+          ls -la Devops/ECS/build/
+          cat Devops/ECS/build/CMakeCache.txt
 
       - name: Capture Test Results
         working-directory: Devops/ECS

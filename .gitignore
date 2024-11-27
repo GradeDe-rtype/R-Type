@@ -1,2 +1,16 @@
 .idea
 .vscode
+
+# Conan files
+conanbuild/
+conanrun/
+*.cmake
+*.pc
+*.sh
+*.json
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile

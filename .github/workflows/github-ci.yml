@@ -13,11 +13,17 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-      # Étape 1 : Récupération du code source
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Étape 2 : Construction des images Docker
+      - name: Install Dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install -y cmake git python3 curl llvm
+          choco install -y mingw
+          where clang-tidy || echo "clang-tidy not installed!"
+          where clang-format || echo "clang-format not installed!"
+
       - name: Build Docker Image
         if: matrix.os == 'ubuntu-latest'
         working-directory: Devops/ECS
@@ -28,7 +34,6 @@ jobs:
         working-directory: Devops/ECS
         run: docker build -t ecs_image -f Dockerfile.windows.ecs .
 
-      # Étape 3 : Exécution des tests pour ECS
       - name: Run ECS Tests
         working-directory: Devops/ECS
         run: |

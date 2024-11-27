@@ -35,4 +35,4 @@ WORKDIR /ECS/build
 RUN cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 RUN make
 
-CMD ["bash"]
+CMD ["bash", "./run_tests.sh"]

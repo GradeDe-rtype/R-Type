@@ -1,4 +1,3 @@
-# Base image pour Windows Server
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 RUN powershell -Command \
@@ -6,7 +5,8 @@ RUN powershell -Command \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression"
 
-RUN choco install -y cmake git python3 curl llvm clang-tidy clang-format --timeout=600
+RUN choco install -y cmake git python3 curl && \
+    choco install -y llvm clang-tidy clang-format
 
 RUN pip install conan
 
@@ -14,12 +14,15 @@ WORKDIR C:\ECS
 
 COPY . C:\ECS
 
+WORKDIR C:\ECS\build
 RUN powershell -Command \
-    conan profile detect; \
-    mkdir C:\ECS\build; \
-    cd C:\ECS\build; \
-    conan install .. --build=missing -c tools.system.package_manager:mode=install; \
-    cmake .. -DCMAKE_BUILD_TYPE=Release; \
+    conan install .. --build=missing; \
+    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
     cmake --build .
+
+RUN powershell -Command \
+    Get-ChildItem -Path ..\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { \
+        clang-tidy $_.FullName -- -std=c++17 -I.\conan\include \
+    }
 
 CMD ["main.exe"]

@@ -19,7 +19,8 @@ jobs:
       - name: Install Dependencies (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          choco install -y cmake git python3 curl llvm
+          choco source add -n community -s https://community.chocolatey.org/api/v2/
+          choco install -y cmake.install git python3 curl llvm
           choco install -y mingw
           where clang-tidy || echo "clang-tidy not installed!"
           where clang-format || echo "clang-format not installed!"

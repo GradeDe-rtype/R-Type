@@ -1,27 +1,34 @@
+# Windows base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
-RUN powershell -Command \
-    "Set-ExecutionPolicy Bypass -Scope Process -Force; \
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
-    Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression"
+SHELL ["cmd", "/S", "/C"]
 
-RUN choco install -y cmake git python3 curl && \
+# Installer Chocolatey
+RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \
+    iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
+
+# Ajouter des sources supplémentaires
+RUN choco source add -n community -s https://community.chocolatey.org/api/v2/
+
+# Installer les dépendances
+RUN choco install -y cmake.install git python3 curl && \
     choco install -y llvm clang-tidy clang-format
 
-RUN pip install conan
+# Définir le répertoire de travail
+WORKDIR C:/ECS
 
-WORKDIR C:\ECS
+# Copier les fichiers dans le conteneur
+COPY . C:/ECS
 
-COPY . C:\ECS
+# Installer les dépendances Conan
+RUN conan profile detect && \
+    conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
 
-RUN powershell -Command \
-    conan install . --build=missing -c tools.system.package_manager:mode=install; \
-    cmake . -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
+# Construire le projet avec CMake
+RUN mkdir C:/ECS/build && \
+    cd C:/ECS/build && \
+    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && \
     cmake --build .
 
-RUN powershell -Command \
-    Get-ChildItem -Path ..\Devops\ECS\ -Recurse -Filter *.cpp | ForEach-Object { \
-        clang-tidy $_.FullName -- -std=c++17 -I.\conan\include \
-    }
-
-CMD ["main.exe"]
+# Exécuter le programme
+CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]

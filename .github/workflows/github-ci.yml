@@ -32,7 +32,7 @@ jobs:
       - name: Run ECS Tests
         working-directory: Devops/ECS
         run: |
-          docker run ecs_image bash -c "./run_tests.sh"
+          docker run ecs_image bash -c "../run_tests.sh"
 
       # Étape 4 : Tests pour Server (commenté pour le moment)
       # - name: Build Docker Image for Server

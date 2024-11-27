@@ -1,22 +1,22 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     build-essential \
     cmake \
+    systemd-devel \
     python3-pip \
     git \
     curl \
     pkg-config \
     systemd \
-    systemd-devel \
     libglvnd-dev \
     mesa-libGL-devel \
     perl \
     autoconf \
     automake \
     libtool \
-    pkg-config \
-    && apt-get clean
+    pkg-config && \
+    apt-get clean
 
 RUN pip3 install conan
 

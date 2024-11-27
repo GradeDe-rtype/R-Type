@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.15)
 project(R-Type)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (Debug or Release)" FORCE)
 endif()
 
-if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
-    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+if(EXISTS "${CMAKE_BINARY_DIR}/conan/conan_toolchain.cmake")
+    include(${CMAKE_BINARY_DIR}/conan/conan_toolchain.cmake)
 else()
-    message(FATAL_ERROR "Conan toolchain file not found. Please run 'conan install' in your build directory.")
+    message(FATAL_ERROR "Conan toolchain file not found. Run 'conan install' with '--output-folder'.")
 endif()
 
 add_executable(${PROJECT_NAME} main.cpp)
@@ -23,7 +23,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-system
 )
 
-if(EXISTS "${CMAKE_BINARY_DIR}/conan/")
+if(EXISTS "${CMAKE_BINARY_DIR}/conan/include")
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/conan/include)
 endif()
 

@@ -1,26 +1,28 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
-SHELL ["cmd", "/S", "/C"]
+SHELL ["powershell", "-Command"]
 
-RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \
-    iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
 
-RUN choco source add -n community -s https://community.chocolatey.org/api/v2/ && \
-    choco install -y cmake.install git python3 curl && \
+RUN choco source add -n community -s https://community.chocolatey.org/api/v2/; \
+    choco install -y cmake.install git python3 curl; \
     choco install -y llvm clang-tidy clang-format
 
-RUN setx PATH "%PATH%;C:\Program Files\CMake\bin"
+RUN $env:PATH += ';C:\Program Files\CMake\bin'; \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
 
 WORKDIR C:/ECS
 
 COPY . C:/ECS
 
-RUN conan profile detect && \
+RUN conan profile detect; \
     conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
 
-RUN mkdir C:/ECS/build && \
-    cd C:/ECS/build && \
-    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && \
+RUN mkdir C:/ECS/build; \
+    cd C:/ECS/build; \
+    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
     cmake --build .
 
 CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]

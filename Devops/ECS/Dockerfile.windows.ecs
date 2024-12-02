@@ -18,8 +18,11 @@ WORKDIR C:/ECS
 
 COPY . C:/ECS
 
-RUN conan profile detect; \
-    conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
+RUN conan profile detect --force && \
+    conan profile update settings.os=Windows default && \
+    conan profile update settings.compiler=msvc default
+
+RUN conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
 
 RUN mkdir C:/ECS/build; \
     cd C:/ECS/build; \

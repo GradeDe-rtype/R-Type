@@ -2,9 +2,6 @@
 sfml/2.5.1
 glm/0.9.9.8
 
-[options]
-libudev/system:*
-
 [generators]
 CMakeToolchain
 CMakeDeps

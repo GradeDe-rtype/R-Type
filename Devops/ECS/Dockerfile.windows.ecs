@@ -9,6 +9,9 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
 RUN choco source add -n community -s https://community.chocolatey.org/api/v2/; \
     choco install -y python3 cmake.install git curl llvm
 
+RUN pip install conan; \
+    setx PATH "%PATH%;C:\Users\ContainerAdministrator\AppData\Local\Programs\Python\Python39\Scripts"
+
 WORKDIR C:/ECS
 
 COPY . C:/ECS

@@ -10,29 +10,22 @@ RUN choco source add -n community -s https://community.chocolatey.org/api/v2/; \
     choco install -y python3 cmake.install git curl
 
 # Installer Visual Studio Build Tools
-RUN curl -sSL https://aka.ms/vs/17/release/vs_buildtools.exe -o vs_buildtools.exe && \
-    .\vs_buildtools.exe --quiet --wait --norestart --nocache \
-    --installPath C:\BuildTools \
-    --add Microsoft.VisualStudio.Workload.VCTools \
-    --add Microsoft.VisualStudio.Workload.MSBuildTools \
-    --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 && \
-    del vs_buildtools.exe
+RUN curl -sSL https://aka.ms/vs/17/release/vs_buildtools.exe -o vs_buildtools.exe; \
+    Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'C:\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools', '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
+    Remove-Item -Force vs_buildtools.exe
 
 RUN python -m pip install --upgrade pip; \
     python -m pip install conan
 
-# Détection automatique et configuration du profil Conan
 RUN conan profile detect --force && \
     conan profile update settings.compiler.version=17 default && \
     conan profile update settings.compiler.runtime=dynamic default
 
 WORKDIR C:/ECS
 
-# Copier le projet et le fichier Conan pour Windows
 COPY . C:/ECS
 COPY conanfile.windows.txt C:/ECS/conanfile.txt
 
-# Installer les dépendances Conan et construire le projet
 RUN conan install . --build=missing --output-folder=build/conan -c tools.system.package_manager:mode=install && \
     mkdir build && \
     cd build && \

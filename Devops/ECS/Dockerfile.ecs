@@ -24,14 +24,12 @@ RUN pip3 install conan
 WORKDIR /ECS
 
 COPY . /ECS
+COPY conanfile.linux.txt /ECS/conanfile.txt
 
 RUN mkdir -p build
 
-RUN conan profile detect --force && \
-    conan profile update settings.os=Linux default && \
-    conan profile update settings.compiler=gcc default
-
-RUN conan install . --build=missing -c tools.system.package_manager:mode=install
+RUN conan profile detect
+RUN conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
 
 
 WORKDIR /ECS/build

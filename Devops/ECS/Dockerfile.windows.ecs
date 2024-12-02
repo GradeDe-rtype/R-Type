@@ -7,11 +7,9 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
 
 RUN choco source add -n community -s https://community.chocolatey.org/api/v2/; \
-    choco install -y cmake.install git python3 curl; \
-    choco install -y llvm clang-tidy clang-format
+    choco install -y cmake.install git python3 curl llvm
 
-RUN $env:PATH += ';C:\Program Files\CMake\bin'; \
-    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
+RUN setx PATH "%PATH%;C:\Program Files\LLVM\bin"
 
 WORKDIR C:/ECS
 

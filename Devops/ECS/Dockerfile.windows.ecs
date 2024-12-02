@@ -1,34 +1,26 @@
-# Windows base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["cmd", "/S", "/C"]
 
-# Installer Chocolatey
 RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \
     iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
 
-# Ajouter des sources supplémentaires
-RUN choco source add -n community -s https://community.chocolatey.org/api/v2/
-
-# Installer les dépendances
-RUN choco install -y cmake.install git python3 curl && \
+RUN choco source add -n community -s https://community.chocolatey.org/api/v2/ && \
+    choco install -y cmake.install git python3 curl && \
     choco install -y llvm clang-tidy clang-format
 
-# Définir le répertoire de travail
+RUN setx PATH "%PATH%;C:\Program Files\CMake\bin"
+
 WORKDIR C:/ECS
 
-# Copier les fichiers dans le conteneur
 COPY . C:/ECS
 
-# Installer les dépendances Conan
 RUN conan profile detect && \
     conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
 
-# Construire le projet avec CMake
 RUN mkdir C:/ECS/build && \
     cd C:/ECS/build && \
     cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && \
     cmake --build .
 
-# Exécuter le programme
 CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]

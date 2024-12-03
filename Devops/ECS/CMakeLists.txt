@@ -13,14 +13,16 @@ endif()
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-find_package(SFML CONFIG REQUIRED)
+find_package(SFML CONFIG REQUIRED COMPONENTS system window graphics)
 find_package(glm CONFIG REQUIRED)
+find_package(Boost 1.83.0 REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glm::glm
     sfml-graphics
     sfml-window
     sfml-system
+    Boost::Boost
 )
 
 if(EXISTS "${CMAKE_BINARY_DIR}/conan/include")

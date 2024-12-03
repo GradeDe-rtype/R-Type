@@ -9,8 +9,7 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
 RUN choco source add -n community -s https://community.chocolatey.org/api/v2/; \
     choco install -y python3 cmake.install git curl
 
-# Installer Visual Studio Build Tools
-RUN curl -sSL https://aka.ms/vs/17/release/vs_buildtools.exe -o vs_buildtools.exe; \
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
     Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'C:\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools', '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
     Remove-Item -Force vs_buildtools.exe
 

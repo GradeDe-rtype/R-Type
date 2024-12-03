@@ -29,6 +29,8 @@ COPY conanfile.linux.txt /ECS/conanfile.txt
 RUN mkdir -p build
 
 RUN conan profile detect
+
+
 RUN conan install . --output-folder=build/conan --build=missing -c tools.system.package_manager:mode=install
 
 

@@ -11,10 +11,13 @@ else()
     message(FATAL_ERROR "Conan toolchain file not found. Run 'conan install' with '--output-folder'.")
 endif()
 
-add_executable(${PROJECT_NAME} main.cpp)
+# Forcer l'utilisation de Visual Studio sur Windows
+if(WIN32)
+    set(CMAKE_C_COMPILER "cl")
+    set(CMAKE_CXX_COMPILER "cl")
+endif()
 
-find_package(SFML CONFIG REQUIRED)
-find_package(glm CONFIG REQUIRED)
+add_executable(${PROJECT_NAME} main.cpp)
 
 find_package(SFML CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)

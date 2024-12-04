@@ -84,10 +84,16 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      - name: Force Push Mirror to Epitech Repo
+      - name: Cleanup and validate repo
         run: |
-          git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git || true
-          git push --force --mirror epitech
+          git fsck --full || true
+          git gc --prune=now || true
+          git remote remove epitech || true
+          git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
+      
+      - name: Push to Epitech Repo
+        run: |
+          git push --force --mirror epitech || true
 
   notify:
     runs-on: ubuntu-latest

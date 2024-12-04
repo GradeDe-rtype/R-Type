@@ -11,11 +11,14 @@ else()
     message(FATAL_ERROR "Conan toolchain file not found. Run 'conan install' with '--output-folder'.")
 endif()
 
-# Forcer l'utilisation de Visual Studio sur Windows
 if(WIN32)
     set(CMAKE_C_COMPILER "cl")
     set(CMAKE_CXX_COMPILER "cl")
 endif()
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
@@ -25,9 +28,9 @@ find_package(Boost REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glm::glm
-    sfml-system
-    sfml-window
     sfml-graphics
+    sfml-window
+    sfml-system
     Boost::headers
 )
 

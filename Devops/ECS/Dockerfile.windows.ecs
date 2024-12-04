@@ -26,10 +26,10 @@ WORKDIR C:/ECS
 
 COPY . C:/ECS
 
-RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ;\
+RUN powershell -Command "& 'C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat' ;\
     mkdir build ;\
     cd build ;\
     cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ;\
-    cmake --build .
+    cmake --build ."
 
 CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]

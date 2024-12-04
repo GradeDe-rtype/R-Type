@@ -26,7 +26,7 @@ WORKDIR C:/ECS
 
 COPY . C:/ECS
 
-RUN powershell -Command "& 'C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat' ;\
+RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ;\
     mkdir build ;\
     cd build ;\
     cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ;\

@@ -82,21 +82,20 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-
-      - name: Prepare Git Remote
-        run: |
-          git remote remove epitech || true
-          git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
-
-      - name: Clean Git Repository
+      - name: Clean Git Repo
         run: |
           git reflog expire --expire=now --all
           git gc --prune=now --aggressive
-          git fsck --full || true
       
-      - name: Push to Epitech Repo
+      - name: Prepare Remote
         run: |
-          git push --force --mirror epitech
+          git remote remove epitech || true
+          git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
+      
+      - name: Push Mirror
+        run: |
+          git push --force epitech +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
+        
 
 
   notify:

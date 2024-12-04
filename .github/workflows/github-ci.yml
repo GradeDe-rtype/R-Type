@@ -88,11 +88,15 @@ jobs:
           git remote remove epitech || true
           git remote add epitech git@github.com:EpitechPromo2027/B-CPP-500-NCE-5-2-rtype-leonard.oursel.git
 
-      - name: Clean and Push
+      - name: Clean Git Repository
         run: |
-          git gc --prune=now
+          git reflog expire --expire=now --all
+          git gc --prune=now --aggressive
           git fsck --full || true
-          git push --force epitech main
+      
+      - name: Push to Epitech Repo
+        run: |
+          git push --force --mirror epitech
 
 
   notify:

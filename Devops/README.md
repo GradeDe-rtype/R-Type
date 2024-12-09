@@ -93,11 +93,12 @@ Structure du projet
 
 Voici les principaux répertoires et fichiers :
 
+```bash
     ECS/ : Contient les Dockerfiles et scripts spécifiques au composant ECS.
     Server/ : Contient les Dockerfiles et scripts pour le serveur.
     Client/ : Contient les Dockerfiles et scripts pour le client.
     Devops/ : Contient le fichier docker-compose.yml, les scripts de tests, et le CI/CD.
-
+    
 ECS/
 ├── Dockerfile.ecs
 ├── Dockerfile.windows.ecs
@@ -110,6 +111,7 @@ Client/
 ├── Dockerfile.windows.client
 Devops/
 ├── docker-compose.yml
+```
 
 Exécution des commandes Docker localement
 Lancer une image spécifique

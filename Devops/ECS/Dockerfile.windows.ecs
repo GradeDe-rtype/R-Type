@@ -32,6 +32,7 @@ COPY . C:/ECS
 
 WORKDIR C:/ECS/build
 
-RUN g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib && test_main.exe
+RUN g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib; \
+    test_main.exe
 
 CMD ["cmd", "/C", "echo All tests completed!"]

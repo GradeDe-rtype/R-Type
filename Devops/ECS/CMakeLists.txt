@@ -16,11 +16,6 @@ else()
     message(FATAL_ERROR "Conan toolchain file not found. Run 'conan install' with '--output-folder'.")
 endif()
 
-if(WIN32)
-    set(CMAKE_C_COMPILER "cl")
-    set(CMAKE_CXX_COMPILER "cl")
-endif()
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

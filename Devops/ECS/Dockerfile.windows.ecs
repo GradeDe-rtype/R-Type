@@ -34,7 +34,7 @@ COPY . C:/ECS
 RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ;\
     mkdir build ;\
     cd build ;\
-    cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ;\
+    cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON;\
     cmake --build ."
 
 CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]

@@ -24,6 +24,7 @@ jobs:
           choco install -y cmake.install git curl llvm mingw
           where clang-tidy || echo "clang-tidy not installed!"
           where clang-format || echo "clang-format not installed!"
+          choco install -y cmake.install --version=3.25.0
 
       - name: Build Docker Image
         if: matrix.os == 'ubuntu-latest'

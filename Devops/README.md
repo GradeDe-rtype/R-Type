@@ -35,77 +35,94 @@ Chaque composant (ECS, Server, Client) possède deux Dockerfiles :
 
 Exemple pour construire les Dockerfiles :
 ```bash
-# Pour Linux
+Pour Windows
 docker build -t ecs_image -f ECS/Dockerfile.ecs .
 docker build -t server_image -f Server/Dockerfile.server .
 docker build -t client_image -f Client/Dockerfile.client .
-
-# Pour Windows
+```
+Pour Windows
+```bash
 docker build -t ecs_image -f ECS/Dockerfile.windows.ecs .
 docker build -t server_image -f Server/Dockerfile.windows.server .
 docker build -t client_image -f Client/Dockerfile.windows.client .
-
+```
 Docker Compose
 
 Le fichier docker-compose.yml permet de lancer simultanément ECS, Server et Client, que ce soit sous Windows ou Linux.
-
 Commandes pour lancer les services :
 
+```bash
 docker-compose up --build
-
+```
 CI/CD Pipeline
 
 Le pipeline CI/CD inclut :
 
     Compilation des images Docker pour chaque composant.
-    Tests fonctionnels et unitaires conditionnels.
+    Tests fonctionnels et unitaires conditionnels :
+        Les tests unitaires sont priorisés si les tests Docker échouent sur Windows.
     Push miroir sur un dépôt distant en cas de succès.
 
 Tests
 Tests unitaires
 
-Les tests unitaires sont intégrés dans le CI/CD et peuvent être exécutés localement pour chaque composant.
+Les tests unitaires sont intégrés dans la CI/CD et peuvent être exécutés localement pour chaque composant.
+Lancer les tests unitaires localement
 
-Exemple de compilation et exécution manuelle des tests :
+Pour exécuter les tests manuellement, utilisez :
 
-# Compiler et exécuter un test unitaire
-g++ -o unit_test.exe test_main.cpp -Ipath_to_glm -Lpath_to_dependencies
-./unit_test.exe
+```bash
+bash Devops/ECS/run_tests.sh
+```
+Installation des dépendances avec Conan
 
-Instructions pour Windows et Linux
+Pour installer les dépendances avec Conan sur votre machine :
 
-    Clonez le dépôt :
+    Assurez-vous d’avoir Conan installé :
 
-git clone <repository_url>
-cd R-Type
-
-Installez Conan :
-
+```bash
 pip install conan
+```
+Exécutez la commande suivante dans le répertoire du projet :
 
-Détectez le profil Conan :
+```bash
+    conan install . --build=missing -c tools.system.package_manager:mode=install
+```
+Si vous rencontrez des problèmes de dépendances, vérifiez vos configurations Conan dans le fichier ~/.conan2/profiles/default.
+Structure du projet
 
-conan profile detect --force
+Voici les principaux répertoires et fichiers :
 
-Installez les dépendances :
+    ECS/ : Contient les Dockerfiles et scripts spécifiques au composant ECS.
+    Server/ : Contient les Dockerfiles et scripts pour le serveur.
+    Client/ : Contient les Dockerfiles et scripts pour le client.
+    Devops/ : Contient le fichier docker-compose.yml, les scripts de tests, et le CI/CD.
 
-conan install . --output-folder=build/conan --build=missing
+ECS/
+├── Dockerfile.ecs
+├── Dockerfile.windows.ecs
+├── run_tests.sh
+Server/
+├── Dockerfile.server
+├── Dockerfile.windows.server
+Client/
+├── Dockerfile.client
+├── Dockerfile.windows.client
+Devops/
+├── docker-compose.yml
 
-Compilez avec CMake :
+Exécution des commandes Docker localement
+Lancer une image spécifique
 
-mkdir build && cd build
-cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-cmake --build .
+Pour lancer une image Docker spécifique (exemple : ECS sur Linux) :
 
-Lancez les tests :
+```bash
+docker run -it ecs_image
+```
+Débogage sous Windows
 
-    ./run_tests.sh
+Si vous rencontrez des problèmes spécifiques à Windows (comme l’absence de CMAKE_C_COMPILER), vous pouvez exécuter des tests unitaires isolés sans passer par CMake. Voir le fichier de test unitaire dans Devops/ECS/tests.
+Notes importantes
 
-FAQ et Dépannage
-
-    Problème : Impossible de trouver un compilateur sous Windows. Assurez-vous que MinGW ou Visual Studio Build Tools sont installés et configurés dans le chemin système.
-
-    Problème : Dépendances manquantes avec Conan. Exécutez conan profile detect --force et vérifiez que toutes les bibliothèques sont disponibles sur ConanCenter.
-
-    Problème : Échec du push dans le pipeline CI/CD. Vérifiez que votre clé SSH est correctement configurée et que le dépôt distant est accessible.
----
+    Compatibilité multiplateforme : Les Dockerfiles et le docker-compose.yml sont conçus pour fonctionner sous Linux et Windows.
+    Mise à jour des dépendances : Si de nouvelles dépendances sont ajoutées, mettez à jour les fichiers Conan correspondants.

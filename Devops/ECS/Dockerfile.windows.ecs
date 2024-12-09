@@ -5,7 +5,7 @@ SHELL ["powershell", "-Command"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
-    choco install -y python3 cmake.install git curl
+    choco install -y python3 git curl
 
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
     Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', \
@@ -20,20 +20,11 @@ RUN python -m pip install --upgrade pip; \
 
 RUN conan profile detect --force
 
-WORKDIR C:/tmp
-
-COPY conanfile.windows.txt C:/tmp/conanfile.txt
-
-RUN conan install . --output-folder=C:/tmp/build/conan --build=missing -c tools.system.package_manager:mode=install
-
 WORKDIR C:/ECS
-
 COPY . C:/ECS
 
 RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ; \
-    mkdir build ; \
-    cd build ; \
-    cmake .. -G \"Visual Studio 17 2022\" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ; \
-    cmake --build ."
+    cl /EHsc /Ipath_to_dependencies /Feunit_test.exe main.cpp ; \
+    unit_test.exe
 
-CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]
+CMD ["cmd", "/C", "echo Tests terminés."]

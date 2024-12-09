@@ -6,8 +6,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (WIN32)
-    set(CMAKE_C_COMPILER "gcc")
-    set(CMAKE_CXX_COMPILER "g++")
+    set(CMAKE_C_COMPILER "cl")
+    set(CMAKE_CXX_COMPILER "cl")
 endif()
 
 if(EXISTS "${CMAKE_BINARY_DIR}/conan/conan_toolchain.cmake")

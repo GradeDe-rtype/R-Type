@@ -21,7 +21,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           choco source add -n community -s https://community.chocolatey.org/api/v2/
-          choco install -y cmake.install git python3 curl llvm mingw
+          choco install -y cmake.install git curl llvm mingw
+          choco install python3 --force
           where clang-tidy || echo "clang-tidy not installed!"
           where clang-format || echo "clang-format not installed!"
 

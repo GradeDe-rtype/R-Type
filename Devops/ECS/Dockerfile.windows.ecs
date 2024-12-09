@@ -7,14 +7,13 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
     choco install -y python3 cmake.install git curl
 
-    RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
     Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', \
     '--installPath', 'C:\BuildTools', \
     '--add', 'Microsoft.VisualStudio.Workload.VCTools', \
     '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', \
     '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
     Remove-Item -Force vs_buildtools.exe
-
 
 RUN python -m pip install --upgrade pip; \
     python -m pip install conan
@@ -31,10 +30,10 @@ WORKDIR C:/ECS
 
 COPY . C:/ECS
 
-RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ;\
-    mkdir build ;\
-    cd build ;\
-    cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON;\
+RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ; \
+    mkdir build ; \
+    cd build ; \
+    cmake .. -G \"Visual Studio 17 2022\" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ; \
     cmake --build ."
 
 CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]

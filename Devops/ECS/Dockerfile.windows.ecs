@@ -2,22 +2,23 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["powershell", "-Command"]
 
-# Installer Chocolatey et les dépendances nécessaires
+# Installer Chocolatey et MinGW
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
     choco install -y mingw python3 cmake.install git curl
 
-# Ajouter MinGW au PATH
-ENV PATH="C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin;%PATH%"
+# Ajouter le chemin correct de MinGW au PATH
+RUN setx PATH "C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin;%PATH%"
 
-# Installation et configuration de Conan
-RUN python -m pip install --upgrade pip; \
+# Mettre à jour pip et installer Conan
+RUN RefreshEnv; \
+    python -m pip install --upgrade pip; \
     python -m pip install conan
 
+# Configuration de Conan
 RUN conan profile detect --force
 
-# Préparer les fichiers de projet
 WORKDIR C:/tmp
 
 COPY conanfile.windows.txt C:/tmp/conanfile.txt
@@ -28,9 +29,8 @@ WORKDIR C:/ECS
 
 COPY . C:/ECS
 
-# Compiler et exécuter les tests unitaires
 WORKDIR C:/ECS/build
 
-RUN powershell -Command "g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib && ./test_main.exe"
+RUN g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib && ./test_main.exe
 
 CMD ["cmd", "/C", "echo All tests completed!"]

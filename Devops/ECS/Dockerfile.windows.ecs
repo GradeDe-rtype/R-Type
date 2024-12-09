@@ -5,16 +5,10 @@ SHELL ["powershell", "-Command"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
-    choco install -y python3 cmake.install git curl mingw; \
-    RefreshEnv
+    choco install -y python3 cmake.install git curl mingw
 
-RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
-    Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', \
-    '--installPath', 'C:\BuildTools', \
-    '--add', 'Microsoft.VisualStudio.Workload.VCTools', \
-    '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', \
-    '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
-    Remove-Item -Force vs_buildtools.exe
+# Ajout manuel des chemins au PATH
+ENV PATH="C:\\Program Files\\mingw-w64\\bin;C:\\Python312\\Scripts;C:\\Python312;%PATH%"
 
 RUN python -m pip install --upgrade pip; \
     python -m pip install conan
@@ -22,16 +16,18 @@ RUN python -m pip install --upgrade pip; \
 RUN conan profile detect --force
 
 WORKDIR C:/tmp
+
 COPY conanfile.windows.txt C:/tmp/conanfile.txt
+
 RUN conan install . --output-folder=C:/tmp/build/conan --build=missing -c tools.system.package_manager:mode=install
 
 WORKDIR C:/ECS
+
 COPY . C:/ECS
 
-RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ; \
-    mkdir build ; \
+RUN mkdir build ; \
     cd build ; \
-    cmake .. -G \"MinGW Makefiles\" -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ; \
+    cmake .. -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
     cmake --build .
 
 CMD ["cmd", "/C", "C:/ECS/build/R-Type.exe"]

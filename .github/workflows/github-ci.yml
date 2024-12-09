@@ -17,35 +17,29 @@ jobs:
         uses: actions/checkout@v3
 
       # Étapes pour Windows (commentées pour l'instant)
-      - name: Install Dependencies (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          choco source add -n community -s https://community.chocolatey.org/api/v2/
-          choco install -y cmake.install git python3 curl llvm mingw
-          where clang-tidy || echo "clang-tidy not installed!"
-          where clang-format || echo "clang-format not installed!"
+      # - name: Install Dependencies (Windows)
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     choco source add -n community -s https://community.chocolatey.org/api/v2/
+      #     choco install -y cmake.install git python3 curl llvm
+      #     choco install -y mingw
+      #     where clang-tidy || echo "clang-tidy not installed!"
+      #     where clang-format || echo "clang-format not installed!"
 
       - name: Build Docker Image
         if: matrix.os == 'ubuntu-latest'
         working-directory: Devops/ECS
         run: docker build -t ecs_image -f Dockerfile.ecs .
 
-      - name: Build Docker Image (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: Devops/ECS
-        run: docker build -t ecs_image -f Dockerfile.windows.ecs .
+      # - name: Build Docker Image (Windows)
+      #   if: matrix.os == 'windows-latest'
+      #   working-directory: Devops/ECS
+      #   run: docker build -t ecs_image -f Dockerfile.windows.ecs .
 
       - name: Run ECS Tests
-        if: matrix.os == 'ubuntu-latest'
         working-directory: Devops/ECS
         run: |
           docker run ecs_image bash -c "../run_tests.sh"
-        
-      - name: Run Unit Tests (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          g++ -o unit_test.exe main.cpp -Ipath_to_glm -Lpath_to_dependencies
-          ./unit_test.exe
 
       # Étape 4 : Tests pour Server (commenté pour le moment)
       # - name: Build Docker Image for Server

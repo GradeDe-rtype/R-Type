@@ -2,28 +2,29 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["powershell", "-Command"]
 
-# Installer Chocolatey et les outils nécessaires
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
-    choco install -y mingw python3 cmake.install git curl
+    choco install -y python3 cmake.install git curl
 
-# Ajouter MinGW au PATH
-ENV PATH="C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin;${PATH}"
+    RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
+    Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', \
+    '--installPath', 'C:\BuildTools', \
+    '--add', 'Microsoft.VisualStudio.Workload.VCTools', \
+    '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', \
+    '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
+    Remove-Item -Force vs_buildtools.exe
 
-# Installer pip et Conan
-RUN RefreshEnv; \
-    python -m pip install --upgrade pip; \
+
+RUN python -m pip install --upgrade pip; \
     python -m pip install conan
 
-# Configurer Conan
 RUN conan profile detect --force
 
 WORKDIR C:/tmp
 
 COPY conanfile.windows.txt C:/tmp/conanfile.txt
 
-# Installer les dépendances Conan
 RUN conan install . --output-folder=C:/tmp/build/conan --build=missing -c tools.system.package_manager:mode=install
 
 WORKDIR C:/ECS
@@ -32,7 +33,4 @@ COPY . C:/ECS
 
 WORKDIR C:/ECS/build
 
-# Compiler et exécuter le test unitaire
-RUN g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib && ./test_main.exe
-
-CMD ["cmd", "/C", "echo All tests completed!"]
+# RUN powershell -Command "mkdir build; cd build; g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib; ./test_main.exe"

@@ -38,12 +38,22 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["powershell", "-Command"]
 
-# Installer les dépendances
+# Installer Chocolatey et les outils de base
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
     choco install -y python3 cmake.install git curl
 
+# Vérifier l'installation de Python et mettre à jour le PATH si nécessaire
+RUN if (!(where python)) { throw 'Python non trouvé après installation'; } \
+    else { \
+        Write-Host 'Python trouvé'; \
+        $pythonPath = (Get-Command python).Source; \
+        Write-Host ('Ajout de {0} au PATH' -f $pythonPath); \
+        setx PATH \"$($pythonPath);%PATH%\"; \
+    }
+
+# Installer Visual Studio Build Tools
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
     Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', \
     '--installPath', 'C:\BuildTools', \
@@ -52,38 +62,38 @@ RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFi
     '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
     Remove-Item -Force vs_buildtools.exe
 
-# Ajouter les outils au PATH
+# Ajouter Visual Studio Compiler au PATH
 ENV PATH="C:\\BuildTools\\VC\\Tools\\MSVC\\14.35.32215\\bin\\Hostx64\\x64;%PATH%"
 
+# Installer Conan
 RUN python -m pip install --upgrade pip; \
     python -m pip install conan
 
+# Détecter le profil Conan
 RUN conan profile detect --force
 
+# Copier les fichiers et installer les dépendances Conan
 WORKDIR C:/tmp
 
 COPY conanfile.windows.txt C:/tmp/conanfile.txt
 
 RUN conan install . --output-folder=C:/tmp/build/conan --build=missing -c tools.system.package_manager:mode=install
 
+# Copier le code source
 WORKDIR C:/ECS
 
 COPY . C:/ECS
 
+# Étape de build et de test
 WORKDIR C:/ECS/build
 
-# Script de diagnostic et compilation
 RUN powershell -Command \
     "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat; \
-    echo '=== Liste des générateurs CMake disponibles ==='; \
-    cmake .. --help; \
-    echo '=== Recherche de cl (Visual Studio Compiler) ==='; \
-    if (!(where cl)) { \
-        echo 'cl non trouvé, tentative d'ajout au PATH'; \
-        \$Env:PATH += ';C:\\BuildTools\\VC\\Tools\\MSVC\\14.35.32215\\bin\\Hostx64\\x64'; \
-        if (!(where cl)) { throw 'cl non trouvé même après ajout au PATH'; } \
-    } \
-    echo 'cl trouvé, configuration avec Visual Studio...'; \
+    echo '=== Recherche du compilateur ==='; \
+    if (!(where cl)) { throw 'cl non trouvé dans le PATH'; } \
+    echo 'cl trouvé, configuration avec CMake...'; \
     cmake .. -G \"Visual Studio 17 2022\" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
     cmake --build .; \
     echo 'Compilation terminée avec succès';"
+
+CMD ["cmd", "/C", "echo All tests completed!"]

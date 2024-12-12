@@ -1,3 +1,39 @@
+# FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+# SHELL ["powershell", "-Command"]
+
+# RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+#     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+#     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
+#     choco install -y python3 cmake.install git curl
+
+#     RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
+#     Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', \
+#     '--installPath', 'C:\BuildTools', \
+#     '--add', 'Microsoft.VisualStudio.Workload.VCTools', \
+#     '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', \
+#     '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
+#     Remove-Item -Force vs_buildtools.exe
+
+
+# RUN python -m pip install --upgrade pip; \
+#     python -m pip install conan
+
+# RUN conan profile detect --force
+
+# WORKDIR C:/tmp
+
+# COPY conanfile.windows.txt C:/tmp/conanfile.txt
+
+# RUN conan install . --output-folder=C:/tmp/build/conan --build=missing -c tools.system.package_manager:mode=install
+
+# WORKDIR C:/ECS
+
+# COPY . C:/ECS
+
+# WORKDIR C:/ECS/build
+
+# # RUN powershell -Command "mkdir build; cd build; g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib; ./test_main.exe"
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["powershell", "-Command"]
@@ -7,14 +43,13 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
     choco install -y python3 cmake.install git curl
 
-    RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
     Start-Process -FilePath .\vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', \
-    '--installPath', 'C:\BuildTools', \
+    '--installPath', 'C:\\BuildTools', \
     '--add', 'Microsoft.VisualStudio.Workload.VCTools', \
     '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', \
     '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -Wait; \
     Remove-Item -Force vs_buildtools.exe
-
 
 RUN python -m pip install --upgrade pip; \
     python -m pip install conan
@@ -33,4 +68,21 @@ COPY . C:/ECS
 
 WORKDIR C:/ECS/build
 
-# RUN powershell -Command "mkdir build; cd build; g++ -std=c++20 ../test_main.cpp -o test_main.exe -IC:/tmp/build/conan/include -LC:/tmp/build/conan/lib; ./test_main.exe"
+# Détection des compilateurs et test des options disponibles
+RUN "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat" ; \
+    echo '=== Liste des générateurs CMake disponibles ==='; \
+    cmake .. --help ; \
+    echo '=== Recherche de cl (Visual Studio Compiler) ==='; \
+    where cl || echo 'cl non trouvé'; \
+    echo '=== Recherche de g++ (MinGW) ==='; \
+    where g++ || echo 'g++ non trouvé'; \
+    if (!(where cl)) { \
+        if (!(where g++)) { throw 'Aucun compilateur compatible trouvé (cl ou g++ requis).'; } \
+    } else { \
+        echo 'Compilateur trouvé, configuration de CMake...'; \
+        cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/tmp/build/conan/conan_toolchain.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; \
+        cmake --build . ; \
+        echo 'Compilation terminée avec succès'; \
+    }
+
+CMD ["cmd", "/C", "echo Build terminé!"]

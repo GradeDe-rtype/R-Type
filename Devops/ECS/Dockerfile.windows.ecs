@@ -45,11 +45,11 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     choco install -y python3 cmake.install git curl
 
 # Ajouter Python manuellement au PATH
-RUN $pythonDir = Get-ChildItem -Path 'C:\ProgramData\chocolatey\lib\python3\tools' | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName; \
-    if (!$pythonDir) { throw 'Python directory introuvable après installation'; } \
+RUN $pythonDir = (Get-ChildItem -Path 'C:\ProgramData\chocolatey\lib\python3\tools' | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName); \
+    if (-not $pythonDir) { throw 'Python directory introuvable après installation'; } \
     setx PATH "$pythonDir;%PATH%"; \
     Write-Host "Python ajouté au PATH : $pythonDir"; \
-    python --version || throw 'Python non accessible après mise à jour du PATH'
+    if (!(python --version)) { throw 'Python non accessible après mise à jour du PATH'; }
 
 # Installer Visual Studio Build Tools
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \

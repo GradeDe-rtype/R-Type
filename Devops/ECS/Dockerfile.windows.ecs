@@ -38,20 +38,18 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["powershell", "-Command"]
 
-# Installer Chocolatey et les outils de base
+# Installer Chocolatey et Python
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression; \
     choco install -y python3 cmake.install git curl
 
-# Vérifier l'installation de Python et mettre à jour le PATH si nécessaire
-RUN if (!(where python)) { throw 'Python non trouvé après installation'; } \
-    else { \
-        Write-Host 'Python trouvé'; \
-        $pythonPath = (Get-Command python).Source; \
-        Write-Host ('Ajout de {0} au PATH' -f $pythonPath); \
-        setx PATH \"$($pythonPath);%PATH%\"; \
-    }
+# Ajouter Python manuellement au PATH
+RUN $pythonDir = Get-ChildItem -Path 'C:\ProgramData\chocolatey\lib\python3\tools' | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName; \
+    if (!$pythonDir) { throw 'Python directory introuvable après installation'; } \
+    setx PATH "$pythonDir;%PATH%"; \
+    Write-Host "Python ajouté au PATH : $pythonDir"; \
+    python --version || throw 'Python non accessible après mise à jour du PATH'
 
 # Installer Visual Studio Build Tools
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \

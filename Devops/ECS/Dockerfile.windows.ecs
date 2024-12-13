@@ -45,8 +45,10 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     choco install -y python3 cmake.install git curl
 
 # Ajouter Python manuellement au PATH
-RUN $pythonDir = (Get-ChildItem -Path 'C:\ProgramData\chocolatey\lib\python3\tools' | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName); \
-    if (-not $pythonDir) { throw 'Python directory introuvable après installation'; } \
+RUN $pythonPaths = Get-ChildItem -Recurse -Directory -Path 'C:\ProgramData\chocolatey\lib' | Where-Object { $_.Name -like 'python*' } | Select-Object -ExpandProperty FullName; \
+    if (-not $pythonPaths) { throw 'Python introuvable après installation'; } \
+    $pythonDir = $pythonPaths | Where-Object { Test-Path "$_\python.exe" }; \
+    if (-not $pythonDir) { throw 'Python executable introuvable dans les répertoires détectés'; } \
     setx PATH "$pythonDir;%PATH%"; \
     Write-Host "Python ajouté au PATH : $pythonDir"; \
     if (!(python --version)) { throw 'Python non accessible après mise à jour du PATH'; }

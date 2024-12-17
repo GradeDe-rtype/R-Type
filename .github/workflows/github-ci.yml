@@ -10,30 +10,30 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       # Étapes pour Windows (commentées pour l'instant)
-      - name: Install Dependencies (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          choco source add -n community -s https://community.chocolatey.org/api/v2/
-          choco install -y cmake.install git curl llvm mingw
-          where clang-tidy || echo "clang-tidy not installed!"
-          where clang-format || echo "clang-format not installed!"
+#      - name: Install Dependencies (Windows)
+#        if: matrix.os == 'windows-latest'
+#        run: |
+#          choco source add -n community -s https://community.chocolatey.org/api/v2/
+#          choco install -y cmake.install git curl llvm mingw
+#          where clang-tidy || echo "clang-tidy not installed!"
+#          where clang-format || echo "clang-format not installed!"
 
       - name: Build Docker Image
         if: matrix.os == 'ubuntu-latest'
         working-directory: Devops/ECS
         run: docker build -t ecs_image -f Dockerfile.ecs .
 
-      - name: Build Docker Image (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: Devops/ECS
-        run: docker build -t ecs_image -f Dockerfile.windows.ecs .
+#      - name: Build Docker Image (Windows)
+#        if: matrix.os == 'windows-latest'
+#        working-directory: Devops/ECS
+#        run: docker build -t ecs_image -f Dockerfile.windows.ecs .
 
       - name: Run ECS Tests
         if: matrix.os == 'ubuntu-latest'

@@ -113,3 +113,10 @@ For further details, please check the [documentation](./documentation) folder, w
 <br>
 
 We hope you enjoy contributing to and playing **R-Type**! Feel free to open issues, submit pull requests, or reach out with ideas. 🚀
+
+**Contributors : **
+Caroline Boilly @Aeliondw (caroline.boilly@epitech.eu)
+Damien Defer @deferdam (damien.defer@epitech.eu)
+Daniil Stepanof @Dan13615 (daniil.stepanov@epitech.eu)
+Léonard Oursel @H4rdeol (leonard.oursel@epitech.eu)
+Nathan Tirolf @dragusheen (nathan.tirolf@epitech.eu)

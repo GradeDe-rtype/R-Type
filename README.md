@@ -118,9 +118,9 @@ We hope you enjoy contributing to and playing **R-Type**! Feel free to open issu
 
 ## Contributors
 
-**Caroline Boilly** | [@Aeliondw](https://github.com/Aeliondw) | caroline.boilly@epitech.eu
+**Caroline Boilly** | [@Aeliondw](https://github.com/Aeliondw) | caroline.boilly@epitech.eu  
 **Damien Defer** | [@deferdam](https://github.com/deferdam) | damien.defer@epitech.eu  
 **Daniil Stepanov** | [@Dan13615](https://github.com/Dan13615) | daniil.stepanov@epitech.eu  
 **Léonard Oursel** | [@H4rdeol](https://github.com/H4rdeol) | leonard.oursel@epitech.eu  
-**Nathan Tirolf** | [@dragusheen](https://github.com/dragusheen) | nathan.tirolf@epitech.eu
+**Nathan Tirolf** | [@dragusheen](https://github.com/dragusheen) | nathan.tirolf@epitech.eu  
 

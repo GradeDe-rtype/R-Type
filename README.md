@@ -157,11 +157,10 @@ make
 ```
 
 ### **Start the Server**
-The server expects two main arguments:
-- **IP Address:** The server's IP address (example : `127.0.0.1`)
+The server expects one main argument:
 - **Port:** The server's port number (example : `4242`)
 ```bash
-./r-type_server -i <SERVER_IP> -p <SERVER_PORT>
+./r-type_server -p <SERVER_PORT>
 ```
 
 ### **Launch the Client**

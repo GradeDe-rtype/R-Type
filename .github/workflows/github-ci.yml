@@ -29,75 +29,78 @@ jobs:
 
       - name: Install Dependencies for ECS
         run: |
+          cd ECS/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
 
       - name: Configure CMake for ECS
         run: |
-          cd build
+          cd ECS/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build ECS
         run: |
-          cd build
+          cd ECS/build
           cmake --build . --config Release
 
       - name: Run Tests for ECS
         run: |
-          cd build
+          cd ECS/build
           ctest -C Release --output-on-failure
 
       - name: Configure Conan for Server
         run: |
-          cd ../../Server/
+          cd Server/
           conan profile detect
 
       - name: Install Dependencies for Server
         run: |
+          cd Server/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
 
       - name: Configure CMake for Server
         run: |
-          cd build
+          cd Server/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build Server
         run: |
-          cd build
+          cd Server/build
           cmake --build . --config Release
 
       - name: Run Tests for Server
         run: |
-          cd build
+          cd Server/build
           ctest -C Release --output-on-failure
 
       - name: Configure Conan for Client
         run: |
-          cd ../../Client/
+          cd Client/
           conan profile detect
 
       - name: Install Dependencies for Client
         run: |
+          cd Client/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
 
       - name: Configure CMake for Client
         run: |
-          cd build
+          cd Client/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build Client
         run: |
-          cd build
+          cd Client/build
           cmake --build . --config Release
 
       - name: Run Tests for Client
         run: |
-          cd build
+          cd Client/build
           ctest -C Release --output-on-failure
 
   build-windows:
@@ -124,6 +127,7 @@ jobs:
       - name: Install Dependencies for ECS
         shell: bash
         run: |
+          cd ECS/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
@@ -131,30 +135,31 @@ jobs:
       - name: Configure CMake for ECS
         shell: bash
         run: |
-          cd build
+          cd ECS/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build ECS
         shell: bash
         run: |
-          cd build
+          cd ECS/build
           cmake --build . --config Release
 
       - name: Run Tests for ECS
         shell: bash
         run: |
-          cd build
+          cd ECS/build
           ctest -C Release --output-on-failure
 
       - name: Configure Conan for Server
         shell: bash
         run: |
-          cd ../../Server/
+          cd Server/
           conan profile detect
 
       - name: Install Dependencies for Server
         shell: bash
         run: |
+          cd Server/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
@@ -162,30 +167,31 @@ jobs:
       - name: Configure CMake for Server
         shell: bash
         run: |
-          cd build
+          cd Server/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build Server
         shell: bash
         run: |
-          cd build
+          cd Server/build
           cmake --build . --config Release
 
       - name: Run Tests for Server
         shell: bash
         run: |
-          cd build
+          cd Server/build
           ctest -C Release --output-on-failure
 
       - name: Configure Conan for Client
         shell: bash
         run: |
-          cd ../../Client/
+          cd Client/
           conan profile detect
 
       - name: Install Dependencies for Client
         shell: bash
         run: |
+          cd Client/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
@@ -193,19 +199,19 @@ jobs:
       - name: Configure CMake for Client
         shell: bash
         run: |
-          cd build
+          cd Client/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build Client
         shell: bash
         run: |
-          cd build
+          cd Client/build
           cmake --build . --config Release
 
       - name: Run Tests for Client
         shell: bash
         run: |
-          cd build
+          cd Client/build
           ctest -C Release --output-on-failure
 
   mirror:

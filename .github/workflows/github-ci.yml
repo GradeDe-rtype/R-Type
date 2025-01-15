@@ -47,6 +47,13 @@ jobs:
             libxcb-present-dev libxcb-composite0-dev libxcb-ewmh-dev libxcb-res0-dev \
             libxcb-xkb-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-xinerama0-dev \
             libxcb-xinerama0-dev libxcb-dri3-dev libxcb-sync-dev libxcb-xfixes0-dev \
+            libxcb-util-dev, libxcb-image0-dev libxcb-shape0-dev libxcb-randr0-dev \
+            libxcb-render-util0-dev libxcb-xrm-dev libxcb-xinput-dev libxcb-xtest0-dev \
+            libxcb-xv0-dev libxcb-xvmc0-dev libxcb-xprint0-dev libxcb-screensaver0-dev \
+            libxcb-record0-dev libxcb-xevie0-dev libxcb-xembed0-dev libxcb-xf86dri0-dev \
+            libxcb-xkb-dev libxcb-xrm-dev libxcb-xrm-dev libxcb-xkb-dev libxcb-xkb-dev \
+            libxcb-util-dev libxcb-util0-dev libxcb-util1-dev libxcb-util1-dev \
+            
 
       - name: Configure Conan Profile
         shell: bash

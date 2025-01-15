@@ -40,9 +40,18 @@ jobs:
             clang build-essential libudev-dev libgl-dev libglu-dev libxrandr-dev libxi-dev \
             libx11-dev libxinerama-dev libxcursor-dev libfreetype6-dev libfontconfig1-dev \
             libpng-dev libjpeg-dev libvorbis-dev libopenal-dev libflac-dev libssl-dev \
-            libgles2-mesa-dev libegl1-mesa-dev libxcb-xfixes0-dev libxcb-icccm4-dev \
-            libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-render-util0-dev \
-            libxcb-shape0-dev libxcb-sync-dev libxcb-xinerama0-dev libxcb-xkb-dev libxcb-dri3-dev
+            libgles2-mesa-dev libegl1-mesa-dev \
+            libx11-xcb-dev libfontenc-dev libxaw7-dev libxcomposite-dev libxdamage-dev \
+            libxmu-dev libxmuu-dev libxpm-dev libxres-dev libxss-dev libxtst-dev libxv-dev \
+            libxxf86vm-dev libxcb-glx0-dev libxcb-cursor-dev libxcb-dri2-0-dev \
+            libxcb-present-dev libxcb-composite0-dev libxcb-ewmh-dev libxcb-res0-dev
+
+      - name: Remove APT Lock Files
+        run: |
+          sudo rm -f /var/lib/apt/lists/lock
+          sudo rm -f /var/cache/apt/archives/lock
+          sudo rm -f /var/lib/dpkg/lock*
+          sudo dpkg --configure -a
 
       - name: Configure Conan Profile
         shell: bash

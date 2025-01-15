@@ -39,11 +39,11 @@ jobs:
           echo "[settings]" > ~/.conan2/profiles/default
           echo "arch=x86_64" >> ~/.conan2/profiles/default
           echo "build_type=Release" >> ~/.conan2/profiles/default
-          echo "compiler=clang" >> ~/.conan2/profiles/default
+          echo "compiler=msvc" >> ~/.conan2/profiles/default
           echo "compiler.cppstd=17" >> ~/.conan2/profiles/default
           echo "compiler.runtime=dynamic" >> ~/.conan2/profiles/default
-          echo "compiler.version=15" >> ~/.conan2/profiles/default
-          echo "os=Linux" >> ~/.conan2/profiles/default
+          echo "compiler.version=193" >> ~/.conan2/profiles/default
+          echo "os=Windows" >> ~/.conan2/profiles/default
           echo "[conf]" >> ~/.conan2/profiles/default
           echo "tools.system.package_manager:mode=install" >> ~/.conan2/profiles/default
 

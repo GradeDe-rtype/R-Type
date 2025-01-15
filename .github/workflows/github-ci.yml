@@ -37,15 +37,9 @@ jobs:
           echo "[conf]" >> ~/.conan2/profiles/default
           echo "tools.system.package_manager:mode=install" >> ~/.conan2/profiles/default
 
-      - name: Configure Conan for ECS
-        run: |
-          cd ECS/ECS/
-          conan profile detect
-
       - name: Install Dependencies for ECS
         run: |
           cd ECS/ECS/
-          ls -l
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing

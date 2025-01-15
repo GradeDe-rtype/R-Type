@@ -38,10 +38,9 @@ jobs:
           echo "[settings]" > ~/.conan2/profiles/default
           echo "arch=x86_64" >> ~/.conan2/profiles/default
           echo "build_type=Release" >> ~/.conan2/profiles/default
-          echo "compiler=gcc" >> ~/.conan2/profiles/default
+          echo "compiler=clang" >> ~/.conan2/profiles/default  # Use clang or gcc
           echo "compiler.cppstd=17" >> ~/.conan2/profiles/default
-          echo "compiler.runtime=dynamic" >> ~/.conan2/profiles/default
-          echo "compiler.version=12" >> ~/.conan2/profiles/default
+          echo "compiler.version=15" >> ~/.conan2/profiles/default  # Adjust to match the installed compiler version
           echo "os=Linux" >> ~/.conan2/profiles/default
           echo "[conf]" >> ~/.conan2/profiles/default
           echo "tools.system.package_manager:mode=install" >> ~/.conan2/profiles/default

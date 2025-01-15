@@ -46,13 +46,6 @@ jobs:
             libxxf86vm-dev libxcb-glx0-dev libxcb-cursor-dev libxcb-dri2-0-dev \
             libxcb-present-dev libxcb-composite0-dev libxcb-ewmh-dev libxcb-res0-dev
 
-      - name: Remove APT Lock Files
-        run: |
-          sudo rm -f /var/lib/apt/lists/lock
-          sudo rm -f /var/cache/apt/archives/lock
-          sudo rm -f /var/lib/dpkg/lock*
-          sudo dpkg --configure -a
-
       - name: Configure Conan Profile
         shell: bash
         run: |

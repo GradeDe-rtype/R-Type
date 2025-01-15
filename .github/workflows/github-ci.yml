@@ -24,24 +24,24 @@ jobs:
 
       - name: Configure Conan for ECS
         run: |
-          cd ECS/ECS/
+          cd ECS/
           conan profile detect
 
       - name: Install Dependencies for ECS
         run: |
-          cd ECS/ECS/
+          cd ECS/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
 
       - name: Configure CMake for ECS
         run: |
-          cd ECS/ECS/build
+          cd ECS/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build ECS
         run: |
-          cd ECS/ECS/build
+          cd ECS/build
           cmake --build . --config Release
 #
 #      - name: Run Tests for ECS
@@ -121,13 +121,13 @@ jobs:
       - name: Configure Conan for ECS
         shell: bash
         run: |
-          cd ECS/ECS/
+          cd ECS/
           conan profile detect
 
       - name: Install Dependencies for ECS
         shell: bash
         run: |
-          cd ECS/ECS/
+          cd ECS/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
@@ -135,13 +135,13 @@ jobs:
       - name: Configure CMake for ECS
         shell: bash
         run: |
-          cd ECS/ECS/build
+          cd ECS/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build ECS
         shell: bash
         run: |
-          cd ECS/ECS/build
+          cd ECS/build
           cmake --build . --config Release
 
 #      - name: Run Tests for ECS

@@ -29,6 +29,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install conan
 
+      - name: Configure Conan Profile
+        run: |
+          cd ECS/ECS/
+          echo "[conf]" >> ~/.conan2/profiles/default
+          echo "tools.system.package_manager:mode=install" >> ~/.conan2/profiles/default
+
       - name: Configure Conan for ECS
         run: |
           cd ECS/ECS/
@@ -37,6 +43,7 @@ jobs:
       - name: Install Dependencies for ECS
         run: |
           cd ECS/ECS/
+          ls -l
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing

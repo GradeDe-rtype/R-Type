@@ -58,13 +58,13 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_C_COMPILER=gcc \
-                   -DCMAKE_CXX_COMPILER=g++ \
-                   -G "Unix Makefiles"
+                   -DCMAKE_CXX_COMPILER=g++
 
       - name: Build ECS
         run: |
           cd ECS/ECS/build
           cmake --build . --config Release
+
 #
 #      - name: Run Tests for ECS
 #        run: |

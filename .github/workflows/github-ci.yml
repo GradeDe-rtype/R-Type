@@ -133,18 +133,22 @@ jobs:
           pip install conan
 
       - name: Configure Conan for ECS
-        shell: bash
         run: |
           cd ECS/ECS/
           conan profile detect
 
+      - name: Configure Conan Profile
+        run: |
+          cd ECS/ECS/
+          echo "[conf]" >> ~/.conan2/profiles/default
+          echo "tools.system.package_manager:mode=install" >> ~/.conan2/profiles/default
+
       - name: Install Dependencies for ECS
-        shell: bash
         run: |
           cd ECS/ECS/
           mkdir build
           cd build
-          conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=install
+          conan install .. --output-folder=. --build=missing
 
       - name: Configure CMake for ECS
         shell: bash

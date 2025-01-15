@@ -28,6 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install conan
+          sudo apt install make
 
       - name: Configure Conan Profile
         shell: bash
@@ -55,7 +56,7 @@ jobs:
       - name: Configure CMake for ECS
         run: |
           cd ECS/ECS/build
-          cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
+          cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_C_COMPILER=gcc \
                    -DCMAKE_CXX_COMPILER=g++

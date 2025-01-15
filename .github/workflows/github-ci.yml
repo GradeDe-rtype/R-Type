@@ -32,6 +32,8 @@ jobs:
       - name: Configure Conan Profile
         run: |
           cd ECS/ECS/
+          mkdir -p ~/.conan2/profiles
+          touch ~/.conan2/profiles/default
           echo "[conf]" >> ~/.conan2/profiles/default
           echo "tools.system.package_manager:mode=install" >> ~/.conan2/profiles/default
 

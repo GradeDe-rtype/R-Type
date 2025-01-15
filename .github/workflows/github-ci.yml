@@ -38,11 +38,11 @@ jobs:
           echo "[settings]" > ~/.conan2/profiles/default
           echo "arch=x86_64" >> ~/.conan2/profiles/default
           echo "build_type=Release" >> ~/.conan2/profiles/default
-          echo "compiler=msvc" >> ~/.conan2/profiles/default
+          echo "compiler=gcc" >> ~/.conan2/profiles/default
           echo "compiler.cppstd=17" >> ~/.conan2/profiles/default
           echo "compiler.runtime=dynamic" >> ~/.conan2/profiles/default
-          echo "compiler.version=193" >> ~/.conan2/profiles/default
-          echo "os=Windows" >> ~/.conan2/profiles/default
+          echo "compiler.version=12" >> ~/.conan2/profiles/default
+          echo "os=Linux" >> ~/.conan2/profiles/default
           echo "[conf]" >> ~/.conan2/profiles/default
           echo "tools.system.package_manager:mode=install" >> ~/.conan2/profiles/default
 
@@ -56,10 +56,10 @@ jobs:
       - name: Configure CMake
         run: |
           cd ECS/ECS/build
-          cmake .. -G "x64" -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER=clang \
-            -DCMAKE_CXX_COMPILER=clang++
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_CXX_COMPILER=g++
 
       - name: Build ECS
         run: |

@@ -144,7 +144,7 @@ jobs:
           cd ECS/ECS/
           mkdir build
           cd build
-          conan install .. --output-folder=. --build=missing
+          conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=install
 
       - name: Configure CMake for ECS
         shell: bash

@@ -30,7 +30,7 @@ jobs:
           pip install conan
           sudo apt update
           sudo apt install -y clang build-essential
-          sudo apt install -y libudev-dev
+          sudo apt install -y libudev-dev libgl-dev libglu-dev libxrandr-dev libxi-dev libx11-dev libxinerama-dev libxcursor-dev libfreetype6-dev libfontconfig1-dev libpng-dev libjpeg-dev libvorbis-dev libopenal-dev libflac-dev libudev-dev libssl-dev libgles2-mesa-dev libegl1-mesa-dev
 
       - name: Configure Conan Profile
         shell: bash

@@ -53,11 +53,12 @@ jobs:
           cd build
           conan install .. --output-folder=. --build=missing
 
-      - name: Configure CMake for ECS
+      - name: Configure CMake
         run: |
-          cd ECS/ECS/build
-          cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-
+          cmake .. -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++
 
       - name: Build ECS
         run: |

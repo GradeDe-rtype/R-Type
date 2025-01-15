@@ -24,13 +24,25 @@ jobs:
          chmod 600 ~/.ssh/id_rsa
          git submodule update --init --recursive
 
+      - name: Configure Sudo Permissions
+        run: |
+          echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$USER
+
       - name: Install Conan
         run: |
           python -m pip install --upgrade pip
           pip install conan
+
+      - name: Install Dependencies
+        run: |
           sudo apt update
-          sudo apt install -y clang build-essential
-          sudo apt install -y libudev-dev libgl-dev libglu-dev libxrandr-dev libxi-dev libx11-dev libxinerama-dev libxcursor-dev libfreetype6-dev libfontconfig1-dev libpng-dev libjpeg-dev libvorbis-dev libopenal-dev libflac-dev libudev-dev libssl-dev libgles2-mesa-dev libegl1-mesa-dev
+          sudo apt install -y \
+            clang build-essential libudev-dev libgl-dev libglu-dev libxrandr-dev libxi-dev \
+            libx11-dev libxinerama-dev libxcursor-dev libfreetype6-dev libfontconfig1-dev \
+            libpng-dev libjpeg-dev libvorbis-dev libopenal-dev libflac-dev libssl-dev \
+            libgles2-mesa-dev libegl1-mesa-dev libxcb-xfixes0-dev libxcb-icccm4-dev \
+            libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-render-util0-dev \
+            libxcb-shape0-dev libxcb-sync-dev libxcb-xinerama0-dev libxcb-xkb-dev libxcb-dri3-dev
 
       - name: Configure Conan Profile
         shell: bash

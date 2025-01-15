@@ -146,6 +146,7 @@ jobs:
       - name: Install Dependencies for ECS
         run: |
           cd ECS/ECS/
+          ls -l
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing

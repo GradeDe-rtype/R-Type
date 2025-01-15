@@ -19,37 +19,35 @@ jobs:
 
       - name: Install Conan
         run: |
-          pwd
           python -m pip install --upgrade pip
           pip install conan
+          git submodule update --init --recursive
 
       - name: Configure Conan for ECS
         run: |
-          cd ECS/
-          pwd
-          ls -l
+          cd ECS/ECS/
           conan profile detect
 
       - name: Install Dependencies for ECS
         run: |
-          cd ECS/
+          cd ECS/ECS/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
 
       - name: Configure CMake for ECS
         run: |
-          cd ECS/build
+          cd ECS/ECS/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build ECS
         run: |
-          cd ECS/build
+          cd ECS/ECS/build
           cmake --build . --config Release
 #
 #      - name: Run Tests for ECS
 #        run: |
-#          cd ECS/build
+#          cd ECS/ECS/build
 #          ctest -C Release --output-on-failure
 
 #      - name: Configure Conan for Server
@@ -124,13 +122,13 @@ jobs:
       - name: Configure Conan for ECS
         shell: bash
         run: |
-          cd ECS/
+          cd ECS/ECS/
           conan profile detect
 
       - name: Install Dependencies for ECS
         shell: bash
         run: |
-          cd ECS/
+          cd ECS/ECS/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
@@ -138,19 +136,19 @@ jobs:
       - name: Configure CMake for ECS
         shell: bash
         run: |
-          cd ECS/build
+          cd ECS/ECS/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build ECS
         shell: bash
         run: |
-          cd ECS/build
+          cd ECS/ECS/build
           cmake --build . --config Release
 
 #      - name: Run Tests for ECS
 #        shell: bash
 #        run: |
-#          cd ECS/build
+#          cd ECS/ECS/build
 #          ctest -C Release --output-on-failure
 
 #      - name: Configure Conan for Server
@@ -248,8 +246,8 @@ jobs:
       - name: Read Test Results
         id: read-results
         run: |
-          if [[ -f Devops/ECS/test_results.json ]]; then
-            RESULTS=$(cat Devops/ECS/test_results.json)
+          if [[ -f Devops/ECS/ECS/test_results.json ]]; then
+            RESULTS=$(cat Devops/ECS/ECS/test_results.json)
           else
             RESULTS="[]"
           fi

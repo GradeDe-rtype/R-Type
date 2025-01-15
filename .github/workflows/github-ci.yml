@@ -26,6 +26,8 @@ jobs:
       - name: Configure Conan for ECS
         run: |
           cd ECS/
+          pwd
+          ls -l
           conan profile detect
 
       - name: Install Dependencies for ECS

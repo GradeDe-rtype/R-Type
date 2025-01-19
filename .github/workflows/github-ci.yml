@@ -31,20 +31,18 @@ jobs:
           echo "compiler=clang" >> ~/.conan2/profiles/default
           echo "os=Linux" >> ~/.conan2/profiles/default
 
-      # - name: Build ECS
-      #   run: |
-      #     mkdir build
-      #     cd build
-      #     conan install .. --output-folder=. --build=missing
-      #     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-      #     cmake --build . --config Release
+      - name: Build ECS
+        run: |
+          mkdir build
+          cd build
+          conan install .. --output-folder=. --build=missing
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
 
 
       - name: Run Tests for ECS
         run: |
-          cd ECS/
-          mkdir build
-          cd build
+          cd ECS/ECS/build
           ctest -C Release --output-on-failure
 
       # - name: Configure Conan for Server
@@ -110,27 +108,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install conan
 
-      # - name: Build ECS
-      #   shell: bash
-      #   run: |
-      #     mkdir build
-      #     cd build
-      #     conan install .. --output-folder=. --build=missing
-      #     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-      #     cmake --build . --config Release
-
-      # - name: Run Tests for ECS
-      #   shell: bash
-      #   run: |
-      #     cd build
-      #     ctest -C Release --output-on-failure
+      - name: Build ECS
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          conan install .. --output-folder=. --build=missing
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
 
       - name: Run Tests for ECS
         shell: bash
         run: |
-          cd ECS/
-          mkdir build
           cd build
+          ctest -C Release --output-on-failure
+
+      - name: Run Tests for ECS
+        shell: bash
+        run: |
+          cd ECS/ECS/build
           ctest -C Release --output-on-failure
 
       # - name: Configure Conan for Server

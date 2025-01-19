@@ -47,10 +47,10 @@ jobs:
           cd build
           ctest -C Release --output-on-failure
 
-      - name: Configure Conan for Server
-        run: |
-          cd Server/
-          conan profile detect
+      # - name: Configure Conan for Server
+      #   run: |
+      #     cd Server/
+      #     conan profile detect
 
       - name: Install Dependencies for Server
         run: |
@@ -73,10 +73,10 @@ jobs:
           cd Server/build
           ctest -C Release --output-on-failure
 
-      - name: Configure Conan for Client
-        run: |
-          cd Client/
-          conan profile detect
+      # - name: Configure Conan for Client
+      #   run: |
+      #     cd Client/
+      #     conan profile detect
 
       - name: Install Dependencies for Client
         run: |
@@ -133,11 +133,11 @@ jobs:
           cd build
           ctest -C Release --output-on-failure
 
-      - name: Configure Conan for Server
-        shell: bash
-        run: |
-          cd Server/
-          conan profile detect
+      # - name: Configure Conan for Server
+      #   shell: bash
+      #   run: |
+      #     cd Server/
+      #     conan profile detect
 
       - name: Install Dependencies for Server
         shell: bash
@@ -165,11 +165,11 @@ jobs:
           cd Server/build
           ctest -C Release --output-on-failure
 
-      - name: Configure Conan for Client
-        shell: bash
-        run: |
-          cd Client/
-          conan profile detect
+      # - name: Configure Conan for Client
+      #   shell: bash
+      #   run: |
+      #     cd Client/
+      #     conan profile detect
 
       - name: Install Dependencies for Client
         shell: bash

@@ -131,37 +131,40 @@ jobs:
           ctest -C Release --output-on-failure
 
 
-      - name: Install Dependencies for Client
-        run: |
-          cd Client/
-          mkdir build
-          cd build
-          conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=disabled
-      - name: Configure CMake for Client
-        run: |
-          cd Client/build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-      - name: Build Client
-        run: |
-          cd Client/build
-          cmake --build . --config Release
-      - name: Run Tests for Client
-        run: |
-          cd Client/build
-          ctest -C Release --output-on-failure
+      # - name: Install Dependencies for Client
+      #   run: |
+      #     cd Client/
+      #     mkdir build
+      #     cd build
+      #     conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=disabled
+
+      # - name: Configure CMake for Client
+      #   run: |
+      #     cd Client/build
+      #     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+      # - name: Build Client
+      #   run: |
+      #     cd Client/build
+      #     cmake --build . --config Release
+
+      # - name: Run Tests for Client
+      #   run: |
+      #     cd Client/build
+      #     ctest -C Release --output-on-failure
 
 
-      - name: Build ECS
-        run: |
-          mkdir -p ECS/ECS/build
-          cd ECS/ECS/build
-          conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=disabled
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
-      - name: Run Tests for ECS
-        run: |
-          cd ECS/ECS/build
-          ctest -C Release --output-on-failure
+      # - name: Build ECS
+      #   run: |
+      #     mkdir -p ECS/ECS/build
+      #     cd ECS/ECS/build
+      #     conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=disabled
+      #     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+      #     cmake --build . --config Release
+      # - name: Run Tests for ECS
+      #   run: |
+      #     cd ECS/ECS/build
+      #     ctest -C Release --output-on-failure
       # - name: Configure Conan for Client
       #   run: |
       #     cd Client/

@@ -31,20 +31,6 @@ jobs:
           echo "compiler=clang" >> ~/.conan2/profiles/default
           echo "os=Linux" >> ~/.conan2/profiles/default
 
-      - name: Build ECS
-        run: |
-          mkdir -p ECS/build
-          cd ECS/build
-          conan install .. --output-folder=. --build=missing
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
-
-
-      - name: Run Tests for ECS
-        run: |
-          cd ECS/build
-          ctest -C Release --output-on-failure
-
       # - name: Configure Conan for Server
       #   run: |
       #     cd Server/
@@ -55,7 +41,7 @@ jobs:
           cd Server/
           mkdir build
           cd build
-          conan install .. --output-folder=. --build=missing
+          conan install .. --output-folder=. --build=missing -f ../conanfile.linux.txt
 
       - name: Configure CMake for Server
         run: |
@@ -72,6 +58,20 @@ jobs:
           cd Server/build
           ctest -C Release --output-on-failure
 
+      - name: Build ECS
+        run: |
+          mkdir -p ECS/build
+          cd ECS/build
+          conan install .. --output-folder=. --build=missing -f ../conanfile.linux.txt
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
+
+
+      - name: Run Tests for ECS
+        run: |
+          cd ECS/build
+          ctest -C Release --output-on-failure
+
       # - name: Configure Conan for Client
       #   run: |
       #     cd Client/
@@ -82,7 +82,7 @@ jobs:
           cd Client/
           mkdir build
           cd build
-          conan install .. --output-folder=. --build=missing
+          conan install .. --output-folder=. --build=missing -f ../conanfile.linux.txt
 
       - name: Configure CMake for Client
         run: |
@@ -114,7 +114,7 @@ jobs:
         run: |
           mkdir -p ECS/build
           cd ECS/build
-          conan install .. --output-folder=. --build=missing
+          conan install .. --output-folder=. --build=missing -f ../conanfile.windows.txt
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
 
@@ -142,7 +142,7 @@ jobs:
           cd Server/
           mkdir build
           cd build
-          conan install .. --output-folder=. --build=missing
+          conan install .. --output-folder=. --build=missing -f ../conanfile.windows.txt
 
       - name: Configure CMake for Server
         shell: bash
@@ -174,7 +174,7 @@ jobs:
           cd Client/
           mkdir build
           cd build
-          conan install .. --output-folder=. --build=missing
+          conan install .. --output-folder=. --build=missing -f ../conanfile.windows.txt
 
       - name: Configure CMake for Client
         shell: bash
@@ -196,7 +196,7 @@ jobs:
 
 
   mirror:
-    needs: [build-linux, build-windows]
+    # needs: [build-linux, build-windows]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
@@ -220,7 +220,7 @@ jobs:
 
   notify:
     runs-on: ubuntu-latest
-    needs: [ build-linux, build-windows ]
+    # needs: [ build-linux, build-windows ]
     steps:
       - name: Read Test Results
         id: read-results

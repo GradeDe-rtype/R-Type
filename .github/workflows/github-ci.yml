@@ -31,73 +31,73 @@ jobs:
           echo "compiler=clang" >> ~/.conan2/profiles/default
           echo "os=Linux" >> ~/.conan2/profiles/default
 
-      - name: Build ECS
+      # - name: Build ECS
+      #   run: |
+      #     mkdir build
+      #     cd build
+      #     conan install .. --output-folder=. --build=missing
+      #     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+      #     cmake --build . --config Release
+
+
+      - name: Run Tests for ECS
         run: |
+          cd ECS/ECS/build
+          ctest -C Release --output-on-failure
+
+      - name: Configure Conan for Server
+        run: |
+          cd Server/
+          conan profile detect
+
+      - name: Install Dependencies for Server
+        run: |
+          cd Server/
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
+
+      - name: Configure CMake for Server
+        run: |
+          cd Server/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Server
+        run: |
+          cd Server/build
           cmake --build . --config Release
 
-#
-#      - name: Run Tests for ECS
-#        run: |
-#          cd ECS/ECS/build
-#          ctest -C Release --output-on-failure
+      - name: Run Tests for Server
+        run: |
+          cd Server/build
+          ctest -C Release --output-on-failure
 
-#      - name: Configure Conan for Server
-#        run: |
-#          cd Server/
-#          conan profile detect
-#
-#      - name: Install Dependencies for Server
-#        run: |
-#          cd Server/
-#          mkdir build
-#          cd build
-#          conan install .. --output-folder=. --build=missing
-#
-#      - name: Configure CMake for Server
-#        run: |
-#          cd Server/build
-#          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-#
-#      - name: Build Server
-#        run: |
-#          cd Server/build
-#          cmake --build . --config Release
-#
-#      - name: Run Tests for Server
-#        run: |
-#          cd Server/build
-#          ctest -C Release --output-on-failure
-#
-#      - name: Configure Conan for Client
-#        run: |
-#          cd Client/
-#          conan profile detect
-#
-#      - name: Install Dependencies for Client
-#        run: |
-#          cd Client/
-#          mkdir build
-#          cd build
-#          conan install .. --output-folder=. --build=missing
-#
-#      - name: Configure CMake for Client
-#        run: |
-#          cd Client/build
-#          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-#
-#      - name: Build Client
-#        run: |
-#          cd Client/build
-#          cmake --build . --config Release
-#
-#      - name: Run Tests for Client
-#        run: |
-#          cd Client/build
-#          ctest -C Release --output-on-failure
+      - name: Configure Conan for Client
+        run: |
+          cd Client/
+          conan profile detect
+
+      - name: Install Dependencies for Client
+        run: |
+          cd Client/
+          mkdir build
+          cd build
+          conan install .. --output-folder=. --build=missing
+
+      - name: Configure CMake for Client
+        run: |
+          cd Client/build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Client
+        run: |
+          cd Client/build
+          cmake --build . --config Release
+
+      - name: Run Tests for Client
+        run: |
+          cd Client/build
+          ctest -C Release --output-on-failure
 
   build-windows:
     runs-on: windows-latest
@@ -109,90 +109,90 @@ jobs:
           python -m pip install --upgrade pip
           pip install conan
 
-      - name: Build ECS
-        shell: bash
-        run: |
-          mkdir build
-          cd build
-          conan install .. --output-folder=. --build=missing
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
+      # - name: Build ECS
+      #   shell: bash
+      #   run: |
+      #     mkdir build
+      #     cd build
+      #     conan install .. --output-folder=. --build=missing
+      #     cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+      #     cmake --build . --config Release
+
+      # - name: Run Tests for ECS
+      #   shell: bash
+      #   run: |
+      #     cd build
+      #     ctest -C Release --output-on-failure
 
       - name: Run Tests for ECS
         shell: bash
         run: |
-          cd build
+          cd ECS/ECS/build
           ctest -C Release --output-on-failure
 
-#      - name: Run Tests for ECS
-#        shell: bash
-#        run: |
-#          cd ECS/ECS/build
-#          ctest -C Release --output-on-failure
+      - name: Configure Conan for Server
+        shell: bash
+        run: |
+          cd Server/
+          conan profile detect
 
-#      - name: Configure Conan for Server
-#        shell: bash
-#        run: |
-#          cd Server/
-#          conan profile detect
-#
-#      - name: Install Dependencies for Server
-#        shell: bash
-#        run: |
-#          cd Server/
-#          mkdir build
-#          cd build
-#          conan install .. --output-folder=. --build=missing
-#
-#      - name: Configure CMake for Server
-#        shell: bash
-#        run: |
-#          cd Server/build
-#          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-#
-#      - name: Build Server
-#        shell: bash
-#        run: |
-#          cd Server/build
-#          cmake --build . --config Release
-#
-#      - name: Run Tests for Server
-#        shell: bash
-#        run: |
-#          cd Server/build
-#          ctest -C Release --output-on-failure
-#
-#      - name: Configure Conan for Client
-#        shell: bash
-#        run: |
-#          cd Client/
-#          conan profile detect
-#
-#      - name: Install Dependencies for Client
-#        shell: bash
-#        run: |
-#          cd Client/
-#          mkdir build
-#          cd build
-#          conan install .. --output-folder=. --build=missing
-#
-#      - name: Configure CMake for Client
-#        shell: bash
-#        run: |
-#          cd Client/build
-#          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-#
-#      - name: Build Client
-#        shell: bash
-#        run: |
-#          cd Client/build
-#          cmake --build . --config Release
-#
-#      - name: Run Tests for Client
-#        shell: bash
-#        run: |
-#          cd Client/build
-#          ctest -C Release --output-on-failure
+      - name: Install Dependencies for Server
+        shell: bash
+        run: |
+          cd Server/
+          mkdir build
+          cd build
+          conan install .. --output-folder=. --build=missing
+
+      - name: Configure CMake for Server
+        shell: bash
+        run: |
+          cd Server/build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Server
+        shell: bash
+        run: |
+          cd Server/build
+          cmake --build . --config Release
+
+      - name: Run Tests for Server
+        shell: bash
+        run: |
+          cd Server/build
+          ctest -C Release --output-on-failure
+
+      - name: Configure Conan for Client
+        shell: bash
+        run: |
+          cd Client/
+          conan profile detect
+
+      - name: Install Dependencies for Client
+        shell: bash
+        run: |
+          cd Client/
+          mkdir build
+          cd build
+          conan install .. --output-folder=. --build=missing
+
+      - name: Configure CMake for Client
+        shell: bash
+        run: |
+          cd Client/build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Client
+        shell: bash
+        run: |
+          cd Client/build
+          cmake --build . --config Release
+
+      - name: Run Tests for Client
+        shell: bash
+        run: |
+          cd Client/build
+          ctest -C Release --output-on-failure
 
 
   mirror:

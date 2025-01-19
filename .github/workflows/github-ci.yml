@@ -33,8 +33,8 @@ jobs:
 
       - name: Build ECS
         run: |
-          mkdir build
-          cd build
+          mkdir -p ECS/build
+          cd ECS/build
           conan install .. --output-folder=. --build=missing
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
@@ -42,7 +42,7 @@ jobs:
 
       - name: Run Tests for ECS
         run: |
-          cd ECS/ECS/build
+          cd ECS/build
           ctest -C Release --output-on-failure
 
       # - name: Configure Conan for Server
@@ -53,6 +53,7 @@ jobs:
       - name: Install Dependencies for Server
         run: |
           cd Server/
+          mkdir build
           cd build
           conan install .. --output-folder=. --build=missing
 
@@ -111,8 +112,8 @@ jobs:
       - name: Build ECS
         shell: bash
         run: |
-          mkdir build
-          cd build
+          mkdir -p ECS/build
+          cd ECS/build
           conan install .. --output-folder=. --build=missing
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release

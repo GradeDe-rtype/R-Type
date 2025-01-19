@@ -273,29 +273,29 @@ jobs:
 #          cd Client/build
 #          ctest -C Release --output-on-failure
 
-#  mirror:
-#    needs: [ build-linux, build-windows ]
-#    runs-on: ubuntu-latest
-#    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Configure SSH
-#        run: |
-#          mkdir -p ~/.ssh
-#          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
-#          chmod 600 ~/.ssh/id_rsa
-#
-#      - name: Mirror Repository
-#        run: |
-#          git remote add mirror ${{ secrets.MIRROR_REPOSITORY_URL }}
-#          git push --mirror mirror
-#        env:
-#          GIT_SSH_COMMAND: "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no"
-#
+
+  mirror:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Mirror Repository
+        run: |
+          git remote add mirror ${{ secrets.MIRROR_REPOSITORY_URL }}
+          git push --mirror mirror
+        env:
+          GIT_SSH_COMMAND: "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no"
 
   notify:
     runs-on: ubuntu-latest

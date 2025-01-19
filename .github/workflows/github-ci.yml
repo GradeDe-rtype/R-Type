@@ -19,14 +19,12 @@ jobs:
         run: |
           git submodule sync --recursive
           git submodule update --init --recursive
-
       - name: Install required packages
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libxcb-util-dev \
             libxcb-util0-dev
-
       - name: Install Dependencies
         run: |
           sudo rm -rf /var/lib/apt/lists/lock
@@ -34,27 +32,73 @@ jobs:
           sudo apt update
           sudo apt install -y \
             build-essential clang libssl-dev \
-            cmake python3-pip git curl pkg-config systemd libsystemd-dev \
-            libglvnd-dev libgl1-mesa-dev autoconf automake libtool \
-            libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev \
-            libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev \
-            libxdamage-dev libxext-dev libxfixes-dev libxi-dev \
-            libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev \
-            libxpm-dev libxrandr-dev libxrender-dev libxres-dev \
-            libxss-dev libxt-dev libxtst-dev libxv-dev libxxf86vm-dev \
-            libxcb-glx0-dev libxcb-render0-dev libxcb-render-util0-dev \
-            libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev \
-            libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev \
-            libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinerama0-dev \
-            libxcb-dri3-dev uuid-dev libxcb-cursor-dev libxcb-dri2-0-dev \
-            libxcb-present-dev libxcb-composite0-dev libxcb-ewmh-dev \
-            libxcb-res0-dev libxcb-util-dev libxcb-util0-dev
-
+            build-essential \
+            clang \
+            libudev-dev \
+            libssl-dev \
+            cmake \
+            python3-pip \
+            git \
+            curl \
+            pkg-config \
+            systemd \
+            libsystemd-dev \
+            libglvnd-dev \
+            libgl1-mesa-dev \
+            autoconf \
+            automake \
+            libtool \
+            libx11-dev \
+            libx11-xcb-dev \
+            libfontenc-dev \
+            libice-dev \
+            libsm-dev \
+            libxau-dev \
+            libxaw7-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxdamage-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbfile-dev \
+            libxmu-dev \
+            libxmuu-dev \
+            libxpm-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            libxres-dev \
+            libxss-dev \
+            libxt-dev \
+            libxtst-dev \
+            libxv-dev \
+            libxxf86vm-dev \
+            libxcb-glx0-dev \
+            libxcb-render0-dev \
+            libxcb-render-util0-dev \
+            libxcb-xkb-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-dri3-dev \
+            uuid-dev \
+            libxcb-cursor-dev \
+            libxcb-dri2-0-dev \
+            libxcb-dri3-dev \
+            libxcb-present-dev \
+            libxcb-composite0-dev \
+            libxcb-ewmh-dev \
+            libxcb-res0-dev
       - name: Install Conan
         run: |
           python3 -m pip install --upgrade pip
           pip3 install conan
-
       - name: Configure Conan Profile
         run: |
           mkdir -p ~/.conan2/profiles
@@ -77,8 +121,7 @@ jobs:
         run: |
           mkdir -p Server/build
           cd Server/build
-          export CONAN_SYSREQUIRES_MODE=disabled
-          conan install .. --output-folder=. --build=missing 
+          conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=disabled
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
 
@@ -87,50 +130,42 @@ jobs:
           cd Server/build
           ctest -C Release --output-on-failure
 
-      - name: Build ECS
-        run: |
-          mkdir -p ECS/build
-          cd ECS/build
-          export CONAN_SYSREQUIRES_MODE=disabled
-          conan install .. --output-folder=. --build=missing 
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
-
-
-      - name: Run Tests for ECS
-        run: |
-          cd ECS/build
-          ctest -C Release --output-on-failure
-
-      # - name: Configure Conan for Client
-      #   run: |
-      #     cd Client/
-      #     conan profile detect
 
       - name: Install Dependencies for Client
         run: |
           cd Client/
           mkdir build
           cd build
-          export CONAN_SYSREQUIRES_MODE=disabled
-          conan install .. --output-folder=. --build=missing 
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
-
+          conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=disabled
       - name: Configure CMake for Client
         run: |
           cd Client/build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-
       - name: Build Client
         run: |
           cd Client/build
           cmake --build . --config Release
-
       - name: Run Tests for Client
         run: |
           cd Client/build
           ctest -C Release --output-on-failure
+
+
+      - name: Build ECS
+        run: |
+          mkdir -p ECS/ECS/build
+          cd ECS/ECS/build
+          conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=disabled
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
+      - name: Run Tests for ECS
+        run: |
+          cd ECS/ECS/build
+          ctest -C Release --output-on-failure
+      # - name: Configure Conan for Client
+      #   run: |
+      #     cd Client/
+      #     conan profile detect
 
   build-windows:
     runs-on: windows-latest
@@ -206,6 +241,7 @@ jobs:
         shell: bash
         run: |
           cd Server/build
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/W4"
           cmake --build . --config Release
 
       - name: Run Tests for Server
@@ -221,6 +257,7 @@ jobs:
           cd ECS/build
           conan install .. --output-folder=. --build=missing -c tools.system.package_manager:mode=install
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/W4"
           cmake --build . --config Release
 
       - name: Run Tests for ECS
@@ -260,6 +297,7 @@ jobs:
         shell: bash
         run: |
           cd Client/build
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/W4"
           cmake --build . --config Release
 
       - name: Run Tests for Client

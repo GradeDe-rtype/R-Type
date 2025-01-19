@@ -16,6 +16,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential clang libssl-dev
+      
+      - name: List directory for debugging
+        run: |
+          pwd
+          ls -R
+
 
       - name: Install Conan
         run: |
@@ -38,7 +44,7 @@ jobs:
 
       - name: Install Dependencies for Server
         run: |
-          cd Server/
+          cd Server
           mkdir build
           cd build
           conan install .. --output-folder=. --build=missing -f ../conanfile.linux.txt

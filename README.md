@@ -56,6 +56,8 @@ The R-Type project is composed of three main sections : **Server**, **Client**, 
 
 This structure ensures high performance and modularity.
 
+For more details, refer to the [Main Systems Overviews](https://github.com/GradeDe-rtype/R-Type/wiki#-main-systems-overviews).
+
 <br>
 
 ---

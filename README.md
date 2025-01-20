@@ -94,7 +94,8 @@ Before building and running **R-Type**, ensure that your system meets the follow
 The following dependencies are required:
 - **Boost**: ≥ 1.70 (System component)  
 - **SFML**: ≥ 2.5 (Graphics, Audio, Network)  
-- **Conan**: Dependency management tool  
+- **Conan**: Dependency management tool
+- **Criterion**: Unit tests
 
 ### 🛡️ **Compilers**
 - **GCC**: ≥ 9.3  
